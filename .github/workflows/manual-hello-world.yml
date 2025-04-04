@@ -9,4 +9,4 @@ jobs:
 
     steps:
       - name: Run Hello World
-        run: echo "Hello, World!"
+        run: vswhere
