@@ -1,0 +1,12 @@
+name: Manual Hello World
+
+on:
+  workflow_dispatch: # Allows the workflow to be triggered manually
+
+jobs:
+  hello-world:
+    runs-on: windows-2022 # Use the Windows Server 2022 runner
+
+    steps:
+      - name: Run Hello World
+        run: echo "Hello, World!"
