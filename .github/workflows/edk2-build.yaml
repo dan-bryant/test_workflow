@@ -1,0 +1,18 @@
+name: EDK2 Build
+
+on:
+  workflow_dispatch: # Allows the workflow to be triggered manually
+
+jobs:
+  hello-world:
+    runs-on: windows-2022 # Use the Windows Server 2022 runner
+    defaults:
+      run:
+        shell: cmd
+
+    steps:
+      - name: Checkout EDK2
+        run: git clone --recurse-submodules https://github.com/tianocore/edk2.git
+
+      - name: Setup Python
+        run: git clone --recurse-submodules https://github.com/tianocore/edk2.git
