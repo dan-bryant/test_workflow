@@ -65,4 +65,4 @@ jobs:
           ARCH: X64
           TRGT: DEBUG
         continue-on-error: true
-        run: D:\VENV\Scripts\python.exe -V
+        run: python -V
