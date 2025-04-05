@@ -14,4 +14,17 @@ jobs:
       - name: Find Tools
         continue-on-error: true
         run: wmic logicaldisk get name /format:list
+
+      - name: Dir A
+        continue-on-error: true
+        run: pushd A:\ & dir
+
+      - name: Dir C
+        continue-on-error: true
+        run: pushd C:\ & dir        
+
+      - name: Dir D
+        continue-on-error: true
+        run: pushd D:\ & dir
+        
       
