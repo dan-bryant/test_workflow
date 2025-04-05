@@ -12,7 +12,7 @@ jobs:
 
     steps:
       - name: Move to root
-        run: cd \
+        run: pushd c:\
       - name: Find CLang
         run: dir /s/b clang.exe
       - name: Find NASM
