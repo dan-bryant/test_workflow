@@ -11,5 +11,6 @@ jobs:
         shell: cmd
 
     steps:
-      - name: Run Hello World
-        run: set
+      - name: Find ASL NASM and CLang
+        run: dir /s/b *asl.exe nasm.exe clang.exe
+      
