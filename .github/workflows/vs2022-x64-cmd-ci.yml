@@ -71,6 +71,7 @@ jobs:
           PYTHON_PATH: D:\Python312
           PYTHON_COMMAND: D:\Python312\python.exe
           EDK2_PATH: D:\EDK2
+          CHAIN: VS2022
         run: pushd "%EDK2_PATH%" & %PYTHON_COMMAND% BaseTools\Edk2ToolsBuild.py -t %CHAIN%
 
       - name: Setup Emulator
