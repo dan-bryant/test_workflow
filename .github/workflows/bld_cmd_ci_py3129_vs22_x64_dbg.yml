@@ -61,6 +61,13 @@ jobs:
       #   run: |
       #     dir this_file_does_not_exist.txt
 
+      - name: Debug
+        run: |
+          echo %PYTHON_COMMAND% -m pip install --upgrade pip
+          echo %PYTHON_COMMAND% -m pip install -r "%EDK2_PATH%\pip-requirements.txt"
+          dir %PYTHON_COMMAND%
+          dir "%EDK2_PATH%\pip-requirements.txt"
+
       - name: Install Pip Requirements
         run: |
           %PYTHON_COMMAND% -m pip install --upgrade pip
