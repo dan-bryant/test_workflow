@@ -34,10 +34,6 @@ jobs:
       # - name: Clone Repo
       #   run: git clone https://github.com/tianocore/edk2.git %EDK2_PATH%
 
-      - name: Test Gather
-        run: |
-          for %%p in (a b c) do (echo %%p)
-
       - name: Clone Repo
         run: git clone --recurse-submodules --depth 1 --shallow-submodules %GH_REPO_URL% %REPO_PATH%
 
@@ -132,8 +128,8 @@ jobs:
           set > vmInfoEnvVars.txt
           vswhere -format json > vmInfoVswhere.json
           jq -r ".[0].installationPath" vmInfoVswhere.json > vmInfoVsInstallPath.txt
-          for /f "delims=;" %p in (vmInfoVsInstallPath.txt) do (
-            echo.| vs_installer.exe export --quiet --installPath "%p" --config vmInfoVsConfig.json
+          for /f "delims=;" %%p in (vmInfoVsInstallPath.txt) do (
+            echo.| vs_installer.exe export --quiet --installPath "%%p" --config vmInfoVsConfig.json
           )
 
       - name: Package Build Outputs
@@ -141,14 +137,14 @@ jobs:
         continue-on-error: true
         run: |
           pushd "%EDK2_PATH%\Build"
-          for /d %p in (. *) do (
-            robocopy %CD%\%p\vmInfo* "%ARTIFACT_PATH%\%p"
-            robocopy %CD%\%p\BUILDLOG*.txt "%ARTIFACT_PATH%\%p"
-            robocopy %CD%\%p\*LOG.txt "%ARTIFACT_PATH%\%p"
-            robocopy %CD%\%p\All\%DEBUG%_%VS2022%\%ARCH%\*.efi "%ARTIFACT_PATH%\%p\All\%DEBUG%_%VS2022%\%ARCH%"
-            robocopy %CD%\%p\%DEBUG%_%VS2022%\%ARCH%\*.efi "%ARTIFACT_PATH%\%p\%DEBUG%_%VS2022%\%ARCH%"
-            robocopy %CD%\%p\%DEBUG%_%VS2022%\%ARCH%\%EMU_HOST%* "%ARTIFACT_PATH%\%p\%DEBUG%_%VS2022%\%ARCH%"
-            robocopy %CD%\%p\%DEBUG%_%VS2022%\FV\* "%ARTIFACT_PATH%\%p\%DEBUG%_%VS2022%\FV"
+          for /d %%p in (. *) do (
+            robocopy %CD%\%%p\vmInfo* "%ARTIFACT_PATH%\%%p"
+            robocopy %CD%\%%p\BUILDLOG*.txt "%ARTIFACT_PATH%\%%p"
+            robocopy %CD%\%%p\*LOG.txt "%ARTIFACT_PATH%\%%p"
+            robocopy %CD%\%%p\All\%DEBUG%_%VS2022%\%ARCH%\*.efi "%ARTIFACT_PATH%\%%p\All\%DEBUG%_%VS2022%\%ARCH%"
+            robocopy %CD%\%%p\%DEBUG%_%VS2022%\%ARCH%\*.efi "%ARTIFACT_PATH%\%%p\%DEBUG%_%VS2022%\%ARCH%"
+            robocopy %CD%\%%p\%DEBUG%_%VS2022%\%ARCH%\%EMU_HOST%* "%ARTIFACT_PATH%\%%p\%DEBUG%_%VS2022%\%ARCH%"
+            robocopy %CD%\%%p\%DEBUG%_%VS2022%\FV\* "%ARTIFACT_PATH%\%%p\%DEBUG%_%VS2022%\FV"
           )
 
       - name: Upload Artifact
