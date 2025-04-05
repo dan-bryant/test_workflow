@@ -45,12 +45,12 @@ jobs:
         env:
           PYTHON_COMMAND: D:\VENV\Scripts\python.exe
           EDK2_PATH: D:\EDK2
-        run: choco install python --version=3.12.9 -y
+        run: run "vcpkg install python3
 
-      - name: Create VENV
-        env:
-          VENV: D:\VENV
-        run: C:\ProgramData\chocolatey\bin\python3.12.exe -m venv %VENV%
+      # - name: Create VENV
+      #   env:
+      #     VENV: D:\VENV
+      #   run: C:\ProgramData\chocolatey\bin\python3.12.exe -m venv %VENV%
 
       # - name: Upgrade pip
       #   env:
@@ -76,4 +76,4 @@ jobs:
           ARCH: X64
           TRGT: DEBUG
         continue-on-error: true
-        run: D:\VENV\Scripts\python.exe -V
+        run: dir /s/b c:\vcpkg\python*.exe
