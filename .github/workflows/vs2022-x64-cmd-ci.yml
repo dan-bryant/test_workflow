@@ -74,6 +74,90 @@ jobs:
           CHAIN: VS2022
         run: pushd "%EDK2_PATH%" & %PYTHON_COMMAND% BaseTools\Edk2ToolsBuild.py -t %CHAIN%
 
+      - name: Setup Build_All
+        env:
+          IASL_PREFIX: C:\ProgramData\chocolatey\bin\
+          CLANG_BIN: C:\Program Files\LLVM\bin\
+          NASM_PREFIX: C:\Program Files\NASM\
+          PYTHON_COMMAND: D:\Python312\python.exe
+          PYTHON_PATH: D:\Python312
+          STUART: D:\Python312\Scripts\stuart
+          EDK2_PATH: D:\EDK2
+          CHAIN: VS2022
+          ARCH: X64
+          TRGT: DEBUG
+        run: pushd "%EDK2_PATH%" & %STUART%_setup -c .pytool\CISettings.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
+
+      - name: Update Build_All
+        env:
+          IASL_PREFIX: C:\ProgramData\chocolatey\bin\
+          CLANG_BIN: C:\Program Files\LLVM\bin\
+          NASM_PREFIX: C:\Program Files\NASM\
+          PYTHON_COMMAND: D:\Python312\python.exe
+          PYTHON_PATH: D:\Python312
+          STUART: D:\Python312\Scripts\stuart
+          EDK2_PATH: D:\EDK2
+          CHAIN: VS2022
+          ARCH: X64
+          TRGT: DEBUG
+        run: pushd "%EDK2_PATH%" & %STUART%_update -c .pytool\CISettings.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
+
+      - name: Build Build_All
+        env:
+          IASL_PREFIX: C:\ProgramData\chocolatey\bin\
+          CLANG_BIN: C:\Program Files\LLVM\bin\
+          NASM_PREFIX: C:\Program Files\NASM\
+          PYTHON_COMMAND: D:\Python312\python.exe
+          PYTHON_PATH: D:\Python312
+          STUART: D:\Python312\Scripts\stuart
+          EDK2_PATH: D:\EDK2
+          CHAIN: VS2022
+          ARCH: X64
+          TRGT: DEBUG
+        run: pushd "%EDK2_PATH%" & %STUART%_ci_build -c .pytool/CISettings.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
+
+      - name: Setup EmulatorPkg
+        env:
+          IASL_PREFIX: C:\ProgramData\chocolatey\bin\
+          CLANG_BIN: C:\Program Files\LLVM\bin\
+          NASM_PREFIX: C:\Program Files\NASM\
+          PYTHON_COMMAND: D:\Python312\python.exe
+          PYTHON_PATH: D:\Python312
+          STUART: D:\Python312\Scripts\stuart
+          EDK2_PATH: D:\EDK2
+          CHAIN: VS2022
+          ARCH: X64
+          TRGT: DEBUG
+        run: pushd "%EDK2_PATH%" & %STUART%_setup -c EmulatorPkg\PlatformCI\PlatformBuild.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
+
+      - name: Update EmulatorPkg
+        env:
+          IASL_PREFIX: C:\ProgramData\chocolatey\bin\
+          CLANG_BIN: C:\Program Files\LLVM\bin\
+          NASM_PREFIX: C:\Program Files\NASM\
+          PYTHON_COMMAND: D:\Python312\python.exe
+          PYTHON_PATH: D:\Python312
+          STUART: D:\Python312\Scripts\stuart
+          EDK2_PATH: D:\EDK2
+          CHAIN: VS2022
+          ARCH: X64
+          TRGT: DEBUG
+        run: pushd "%EDK2_PATH%" & %STUART%_update -c EmulatorPkg\PlatformCI\PlatformBuild.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
+
+      - name: Build EmulatorPkg
+        env:
+          IASL_PREFIX: C:\ProgramData\chocolatey\bin\
+          CLANG_BIN: C:\Program Files\LLVM\bin\
+          NASM_PREFIX: C:\Program Files\NASM\
+          PYTHON_COMMAND: D:\Python312\python.exe
+          PYTHON_PATH: D:\Python312
+          STUART: D:\Python312\Scripts\stuart
+          EDK2_PATH: D:\EDK2
+          CHAIN: VS2022
+          ARCH: X64
+          TRGT: DEBUG
+        run: pushd "%EDK2_PATH%" & %STUART%_build -c EmulatorPkg\PlatformCI\PlatformBuild.py -a %ARCH% TOOL_CHAIN_TAG=%CHAIN% TARGET=%TRGT%
+
       - name: Setup OvmfPkg
         env:
           IASL_PREFIX: C:\ProgramData\chocolatey\bin\
