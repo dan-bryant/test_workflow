@@ -41,21 +41,21 @@ jobs:
       #     NASM_PREFIX: C:\Program Files\NASM\
       #   run: dir /s/b "%NASM_PREFIX%\nasm.exe"
       
-      # - name: Create VENV
-      #   env:
-      #     VENV: D:\VENV
-      #   run: python -m venv %VENV%
-
-      # - name: Upgrade pip
-      #   env:
-      #     PYTHON_COMMAND: D:\VENV\Scripts\python.exe
-      #   run: D:\VENV\Scripts\python.exe -m pip install --upgrade pip
-
       - name: Install Python 3.12
         env:
           PYTHON_COMMAND: D:\VENV\Scripts\python.exe
           EDK2_PATH: D:\EDK2
         run: choco install python --version=3.12.9 -y
+
+      - name: Create VENV
+        env:
+          VENV: D:\VENV
+        run: C:\ProgramData\chocolatey\bin\python3.12.exe -m venv %VENV%
+
+      # - name: Upgrade pip
+      #   env:
+      #     PYTHON_COMMAND: D:\VENV\Scripts\python.exe
+      #   run: D:\VENV\Scripts\python.exe -m pip install --upgrade pip
 
       # - name: Install Requirements
       #   env:
@@ -76,4 +76,4 @@ jobs:
           ARCH: X64
           TRGT: DEBUG
         continue-on-error: true
-        run: dir /s/b C:\ProgramData\chocolatey\python*.exe
+        run: D:\VENV\Scripts\python.exe -V
