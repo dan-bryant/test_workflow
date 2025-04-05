@@ -51,7 +51,7 @@ jobs:
         env:
           PYTHON_COMMAND: D:\VENV\Scripts\python.exe
           EDK2_PATH: D:\EDK2
-        run: D:\python-3.12.0-amd64.exe /quiet InstallAllUsers=1 PrependPath=1
+        run: D:\python-3.12.0-amd64.exe /quiet TargetDir=D:\Python312
 
       # - name: Create VENV
       #   env:
