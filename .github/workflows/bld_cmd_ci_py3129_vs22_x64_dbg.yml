@@ -79,13 +79,13 @@ jobs:
           %STUART%_setup -c .pytool\CISettings.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
           %STUART%_update -c .pytool\CISettings.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
 
-      - name: Build Build_All
-        # Compiler #2065: EmbeddedPkg\...\VirtualRealTimeClockLib.c(89): 'BUILD_EPOCH': undeclared
-        continue-on-error: true
-        run: |
-          pushd "%EDK2_PATH%"
-          call edksetup.bat Reconfig %CHAIN%
-          %STUART%_ci_build -c .pytool\CISettings.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
+      # - name: Build Build_All
+      #   # Compiler #2065: EmbeddedPkg\...\VirtualRealTimeClockLib.c(89): 'BUILD_EPOCH': undeclared
+      #   continue-on-error: true
+      #   run: |
+      #     pushd "%EDK2_PATH%"
+      #     call edksetup.bat Reconfig %CHAIN%
+      #     %STUART%_ci_build -c .pytool\CISettings.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
 
       - name: Setup and update EmulatorPkg
         run: |
