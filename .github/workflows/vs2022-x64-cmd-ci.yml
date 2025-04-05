@@ -76,4 +76,4 @@ jobs:
           ARCH: X64
           TRGT: DEBUG
         continue-on-error: true
-        run: python -V
+        run: dir /s/b C:\ProgramData\chocolatey\python*.exe
