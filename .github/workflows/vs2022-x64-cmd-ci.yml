@@ -25,7 +25,7 @@ jobs:
           ARCH: X64
           TRGT: DEBUG
         continue-on-error: true
-        run: dir /s/b %IASL_PREFIX%\iasl.exe
+        run: dir /s/b "%IASL_PREFIX%\iasl.exe"
 
       - name: Find CLANG
         env:
@@ -36,7 +36,7 @@ jobs:
           ARCH: X64
           TRGT: DEBUG
         continue-on-error: true
-        run: dir /s/b %CLANG_BIN%\clang.exe
+        run: dir /s/b "%CLANG_BIN%\clang.exe"
 
       - name: Find NASM
         env:
@@ -47,6 +47,6 @@ jobs:
           ARCH: X64
           TRGT: DEBUG
         continue-on-error: true
-        run: dir /s/b %NASM_PREFIX%\nasm.exe 
+        run: dir /s/b "%NASM_PREFIX%\nasm.exe"
 
               
