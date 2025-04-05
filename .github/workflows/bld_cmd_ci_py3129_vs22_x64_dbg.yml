@@ -14,15 +14,15 @@ jobs:
       IASL_PREFIX: C:\ProgramData\chocolatey\bin\
       CLANG_BIN: C:\Program Files\LLVM\bin\
       NASM_PREFIX: C:\Program Files\NASM\
-      PYTHON_COMMAND: ${{ github.workspace }}\Python312\python.exe
-      PYTHON_PATH: ${{ github.workspace }}\Python312
+      PYTHON_COMMAND: D:\Python312\python.exe
+      PYTHON_PATH: D:\Python312
       PYTHON_VERSION: 3.12.9
       PYTHON_SETUP: python-3.12.9-amd64.exe
-      STUART: ${{ github.workspace }}\Python312\Scripts\stuart
+      STUART: D:\Python312\Scripts\stuart
       GITHUB_REPOSITORY_URL: ${{ github.server_url }}/${{ github.repository }}      
       REPO_PATH: D:\
-      EDK2_PATH: ${{ github.workspace }}\Edk2
-      ARTIFACT_PATH: ${{ github.workspace }}\artifact
+      EDK2_PATH: D:\Edk2
+      ARTIFACT_PATH: D:\artifact
       EMU_HOST: WinHost
       CHAIN: VS2022
       ARCH: X64
