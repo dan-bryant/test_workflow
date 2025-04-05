@@ -20,6 +20,7 @@ jobs:
       CHAIN: VS2022
       ARCH: X64
       TRGT: DEBUG
+      EMU_HOST: WinHost
     defaults:
       run:
         shell: cmd
@@ -63,13 +64,13 @@ jobs:
       - name: Build BaseTools
         run: |
           pushd "%EDK2_PATH%"
-          call edksetup.bat %CHAIN%
+          call edksetup.bat Reconfig %CHAIN%
           %PYTHON_COMMAND% BaseTools\Edk2ToolsBuild.py -t %CHAIN%
 
       - name: Setup and update Build_All
         run: |
           pushd "%EDK2_PATH%"
-          call edksetup.bat %CHAIN%
+          call edksetup.bat Reconfig %CHAIN%
           %STUART%_setup -c .pytool\CISettings.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
           %STUART%_update -c .pytool\CISettings.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
 
@@ -78,46 +79,68 @@ jobs:
         continue-on-error: true 
         run: |
           pushd "%EDK2_PATH%"
-          call edksetup.bat %CHAIN%
+          call edksetup.bat Reconfig %CHAIN%
           %STUART%_ci_build -c .pytool\CISettings.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
 
       - name: Setup and update EmulatorPkg
         run: |
           pushd "%EDK2_PATH%"
-          call edksetup.bat %CHAIN%
+          call edksetup.bat Reconfig %CHAIN%
           %STUART%_setup -c EmulatorPkg\PlatformCI\PlatformBuild.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
           %STUART%_update -c EmulatorPkg\PlatformCI\PlatformBuild.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
 
       - name: Build EmulatorPkg
         run: |
           pushd "%EDK2_PATH%"
-          call edksetup.bat %CHAIN%
+          call edksetup.bat Reconfig %CHAIN%
           %STUART%_build -c EmulatorPkg\PlatformCI\PlatformBuild.py -a %ARCH% TOOL_CHAIN_TAG=%CHAIN% TARGET=%TRGT%
 
       - name: Setup and update OvmfPkg
         run: |
           pushd "%EDK2_PATH%"
-          call edksetup.bat %CHAIN%
+          call edksetup.bat Reconfig %CHAIN%
           %STUART%_setup -c OvmfPkg\PlatformCI\PlatformBuild.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
           %STUART%_update -c OvmfPkg\PlatformCI\PlatformBuild.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
 
       - name: Build OvmfPkg
         run: |
           pushd "%EDK2_PATH%"
-          call edksetup.bat %CHAIN%
+          call edksetup.bat Reconfig %CHAIN%
           %STUART%_build -c OvmfPkg\PlatformCI\PlatformBuild.py -a %ARCH% TOOL_CHAIN_TAG=%CHAIN% TARGET=%TRGT%
 
-      # - name: Package Build Outputs
-      #   run: |
-      #     mkdir %ARTIFACT_PATH%
-      #     robocopy %EDK2_PATH%\Build %ARTIFACT_PATH% /E
+      - name: Gather VS Environment Data
+        run: |
+          pushd "%EDK2_PATH%\Build"
+          call edksetup.bat Reconfig %CHAIN%
+          set > vmInfoEnvVars.txt
+          vswhere -format json > vmInfoVswhere.json
+          jq -r ".[0].installationPath" vmInfoVswhere.json > vmInfoVsInstallPath.txt
+          for /f "delims=;" %p in (vmInfoVsInstallPath.txt) do (
+            echo.| vs_installer.exe export --quiet --installPath "%p" --config vmInfoVsConfig.json
+          )
+
+      - name: Package Build Outputs
+        continue-on-error: true
+        run: |
+          pushd "%EDK2_PATH%\Build"
+          for /d %p in (. *) do (
+            robocopy %CD%\%p\vmInfo* "%ARTIFACT_PATH%\%p"
+            robocopy %CD%\%p\BUILDLOG*.txt "%ARTIFACT_PATH%\%p"
+            robocopy %CD%\%p\*LOG.txt "%ARTIFACT_PATH%\%p"
+            robocopy %CD%\%p\All\%DEBUG%_%VS2022%\%ARCH%\*.efi "%ARTIFACT_PATH%\%p\All\%DEBUG%_%VS2022%\%ARCH%"
+            robocopy %CD%\%p\%DEBUG%_%VS2022%\%ARCH%\*.efi "%ARTIFACT_PATH%\%p\%DEBUG%_%VS2022%\%ARCH%"
+            robocopy %CD%\%p\%DEBUG%_%VS2022%\%ARCH%\%EMU_HOST%* "%ARTIFACT_PATH%\%p\%DEBUG%_%VS2022%\%ARCH%"
+            robocopy %CD%\%p\%DEBUG%_%VS2022%\FV\* "%ARTIFACT_PATH%\%p\%DEBUG%_%VS2022%\FV"
+          )
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: build-artifact
-          path: D:\EDK2\Build\**\*
+          path: D:\artifact\**\*
 
       - name: savegame
         continue-on-error: true
         run: dir /s/b D:\Python312\stuart_update*
+
+      
