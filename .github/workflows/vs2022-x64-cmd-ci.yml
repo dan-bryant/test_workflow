@@ -74,7 +74,7 @@ jobs:
           CHAIN: VS2022
         run: pushd "%EDK2_PATH%" & %PYTHON_COMMAND% BaseTools\Edk2ToolsBuild.py -t %CHAIN%
 
-      - name: Setup Emulator
+      - name: Setup OvmfPkg
         env:
           IASL_PREFIX: C:\ProgramData\chocolatey\bin\
           CLANG_BIN: C:\Program Files\LLVM\bin\
@@ -86,9 +86,9 @@ jobs:
           CHAIN: VS2022
           ARCH: X64
           TRGT: DEBUG
-        run: pushd "%EDK2_PATH%" & %STUART%_setup -c EmulatorPkg\PlatformCI\PlatformBuild.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
+        run: pushd "%EDK2_PATH%" & %STUART%_setup -c OvmfPkg\PlatformCI\PlatformBuild.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
 
-      - name: Update Emulator
+      - name: Update OvmfPkg
         env:
           IASL_PREFIX: C:\ProgramData\chocolatey\bin\
           CLANG_BIN: C:\Program Files\LLVM\bin\
@@ -100,7 +100,7 @@ jobs:
           CHAIN: VS2022
           ARCH: X64
           TRGT: DEBUG
-        run: pushd "%EDK2_PATH%" & %STUART%_update -c EmulatorPkg\PlatformCI\PlatformBuild.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
+        run: pushd "%EDK2_PATH%" & %STUART%_update -c OvmfPkg\PlatformCI\PlatformBuild.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
 
       - name: Build OvmfPkg
         env:
