@@ -10,15 +10,15 @@ jobs:
       run:
         shell: cmd        
     steps:
-      - name: Clone Repo
-        env:
-          EDK2_PATH: D:\EDK2
-        run: git clone https://github.com/tianocore/edk2.git %EDK2_PATH%
-
       # - name: Clone Repo
       #   env:
       #     EDK2_PATH: D:\EDK2
-      #   run: git clone --recurse-submodules https://github.com/tianocore/edk2.git %EDK2_PATH%
+      #   run: git clone https://github.com/tianocore/edk2.git %EDK2_PATH%
+
+      - name: Clone Repo
+        env:
+          EDK2_PATH: D:\EDK2
+        run: git clone --recurse-submodules https://github.com/tianocore/edk2.git %EDK2_PATH%
 
       - name: Install NASM
         run: choco install nasm -y
@@ -64,7 +64,7 @@ jobs:
           EDK2_PATH: D:\EDK2
         run: D:\Python312\python.exe -m pip install -r "%EDK2_PATH%\pip-requirements.txt"
 
-      - name: savegame
+      - name: Build BaseTools
         env:
           IASL_PREFIX: C:\ProgramData\chocolatey\bin\
           CLANG_BIN: C:\Program Files\LLVM\bin\
