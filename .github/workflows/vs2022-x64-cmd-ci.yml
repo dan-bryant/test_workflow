@@ -36,21 +36,21 @@ jobs:
       #     NASM_PREFIX: C:\Program Files\NASM\
       #   run: dir /s/b "%NASM_PREFIX%\nasm.exe"
       
-      - name: Create VENV
-        env:
-          VENV: D:\VENV
-        run: python -m venv %VENV%
+      # - name: Create VENV
+      #   env:
+      #     VENV: D:\VENV
+      #   run: python -m venv %VENV%
 
-      - name: Upgrade pip
-        env:
-          PYTHON_COMMAND: D:\VENV\Scripts\python.exe
-        run: D:\VENV\Scripts\python.exe -m pip install --upgrade pip
+      # - name: Upgrade pip
+      #   env:
+      #     PYTHON_COMMAND: D:\VENV\Scripts\python.exe
+      #   run: D:\VENV\Scripts\python.exe -m pip install --upgrade pip
 
-      - name: Install Requirements
-        env:
-          PYTHON_COMMAND: D:\VENV\Scripts\python.exe
-          EDK2_PATH: D:\EDK2
-        run: D:\VENV\Scripts\python.exe -m pip install -r "%EDK2_PATH%\pip-requirements.txt"
+      # - name: Install Requirements
+      #   env:
+      #     PYTHON_COMMAND: D:\VENV\Scripts\python.exe
+      #     EDK2_PATH: D:\EDK2
+      #   run: D:\VENV\Scripts\python.exe -m pip install -r "%EDK2_PATH%\pip-requirements.txt"
 
       - name: savegame
         env:
@@ -65,4 +65,4 @@ jobs:
           ARCH: X64
           TRGT: DEBUG
         continue-on-error: true
-        run: dir "%PYTHON_COMMAND%"
+        run: D:\VENV\Scripts\python.exe -V
