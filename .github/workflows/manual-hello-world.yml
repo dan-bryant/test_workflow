@@ -11,6 +11,8 @@ jobs:
         shell: cmd
 
     steps:
+      - name: Move to root
+        run: cd \
       - name: Find ASL NASM and CLang
         run: dir /s/b *asl.exe nasm.exe clang.exe
       
