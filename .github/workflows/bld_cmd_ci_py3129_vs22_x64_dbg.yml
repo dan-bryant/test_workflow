@@ -36,7 +36,7 @@ jobs:
 
       - name: Test Gather
         run: |
-          for %p in (a b c) do (echo %p)
+          for %%p in (a b c) do (echo %%p)
 
       - name: Clone Repo
         run: git clone --recurse-submodules --depth 1 --shallow-submodules %GH_REPO_URL% %REPO_PATH%
