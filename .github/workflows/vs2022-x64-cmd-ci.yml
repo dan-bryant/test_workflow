@@ -12,34 +12,24 @@ jobs:
     steps:
       - name: Install LLVM
         env:
-          CLANG_DIR: D:\LLVM
-        run: choco install llvm --install-directory "%CLANG_DIR%"
+        run: winget install --source winget --id LLVM.LLVM
 
       - name: Install NASM
         env:
-          CLANG_DIR: D:\LLVM
-          NASM_DIR: D:\NASM
-        run: choco install nasm --install-directory "%NASM_DIR%"
+        run: winget install --source winget --id NASM.NASM
 
       - name: Install IASL
-        env:
-          CLANG_DIR: D:\LLVM
-          NASM_DIR: D:\NASM
-          IASL_DIR: D:\IASL
-          CHAIN: VS2022
-          ARCH: X64
-          TRGT: DEBUG
-        run: choco install iasl --install-directory "%IASL_DIR%"
+        run: choco install iasl
 
       - name: Find Binaries
         env:
-          CLANG_DIR: D:\LLVM
-          NASM_DIR: D:\NASM
-          IASL_DIR: D:\IASL
+          IASL_PREFIX: C:\ProgramData\chocolatey\bin\
+          CLANG_BIN: C:\Program Files\LLVM\bin\
+          NASM_PREFIX: C:\Program Files\NASM\
           CHAIN: VS2022
           ARCH: X64
           TRGT: DEBUG
         continue-on-error: true
-        run: dir /s/b %CLANG_DIR%\*.exe %NASM_DIR%\*.exe %IASL_DIR%\*.exe 
+        run: dir /s/b %IASL_PREFIX%\*.exe %CLANG_BIN%\*.exe %NASM_PREFIX%\*.exe 
 
               
