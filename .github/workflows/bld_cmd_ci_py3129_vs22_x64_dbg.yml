@@ -33,6 +33,14 @@ jobs:
       # - name: Clone Repo
       #   run: git clone https://github.com/tianocore/edk2.git %EDK2_PATH%
 
+      - name: Install Python 3.12.9, NASM, IASL
+        run: |
+          echo curl -o %PYTHON_SETUP% https://www.python.org/ftp/python/%PYTHON_VERSION%/%PYTHON_SETUP%
+          curl -o %PYTHON_SETUP% https://www.python.org/ftp/python/%PYTHON_VERSION%/%PYTHON_SETUP%
+          echo %PYTHON_SETUP% /quiet TargetDir=%PYTHON_PATH%
+          %PYTHON_SETUP% /quiet TargetDir=%PYTHON_PATH%
+          choco install nasm iasl -y
+
       - name: Clone Repo
         run: git clone --recurse-submodules %GITHUB_REPOSITORY_URL% %EDK2_PATH%
 
@@ -50,14 +58,6 @@ jobs:
 
       # - name: Find NASM
       #   run: dir /s/b "%NASM_PREFIX%\nasm.exe"
-
-      - name: Install Python 3.12.9, NASM, IASL
-        run: |
-          echo curl -o %PYTHON_SETUP% https://www.python.org/ftp/python/%PYTHON_VERSION%/%PYTHON_SETUP%
-          curl -o %PYTHON_SETUP% https://www.python.org/ftp/python/%PYTHON_VERSION%/%PYTHON_SETUP%
-          echo %PYTHON_SETUP% /quiet TargetDir=%PYTHON_PATH%
-          %PYTHON_SETUP% /quiet TargetDir=%PYTHON_PATH%
-          choco install nasm iasl -y
 
       # - name: Break
       #   run: |
