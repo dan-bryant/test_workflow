@@ -12,5 +12,6 @@ jobs:
 
     steps:
       - name: Find Tools
+        continue-on-error: true
         run: for %D in (C D E F G H I J K L M N O P Q R S T U V W X Y Z) do (if exist %D:\ (pushd %D:\ && dir /s/b nasm.exe clang.exe *asl.exe))
       
