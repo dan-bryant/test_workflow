@@ -11,11 +11,9 @@ jobs:
         shell: cmd        
     steps:
       - name: Install LLVM
-        env:
         run: winget install --source winget --id LLVM.LLVM
 
       - name: Install NASM
-        env:
         run: winget install --source winget --id NASM.NASM
 
       - name: Install IASL
