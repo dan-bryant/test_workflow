@@ -39,7 +39,7 @@ jobs:
       - name: Clone Repo
         env:
           EDK2_PATH: D:\EDK2
-        run: git clone --recursive-submodules https://github.com/tianocore/edk2.git %EDK2_PATH%
+        run: git clone --recurse-submodules https://github.com/tianocore/edk2.git %EDK2_PATH%
 
       - name: savegame
         env:
