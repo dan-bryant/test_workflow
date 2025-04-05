@@ -148,5 +148,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: build-artifact
-          path: ${{ env. }}\**\*
+          path: ${{ env.ARTIFACT_PATH }}\**\*
 
