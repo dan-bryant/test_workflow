@@ -16,8 +16,7 @@ jobs:
       PYTHON_COMMAND: D:\Python312\python.exe
       PYTHON_PATH: D:\Python312
       PYTHON_VERSION: 3.12.9
-      PYTHON_SETUP_EXE: python-3.12.9-amd64.exe
-      PYTHON_SETUP: D:\python-3.12.9-amd64.exe
+      PYTHON_SETUP: python-3.12.9-amd64.exe
       STUART: D:\Python312\Scripts\stuart
       GITHUB_REPOSITORY_URL: ${{ github.server_url }}/${{ github.repository }}      
       REPO_PATH: D:\REPO
@@ -33,6 +32,16 @@ jobs:
     steps:
       # - name: Clone Repo
       #   run: git clone https://github.com/tianocore/edk2.git %EDK2_PATH%
+
+      - name: Install Python 3.12.9, NASM, IASL
+        run: |
+          echo curl -o D:\%PYTHON_SETUP% https://www.python.org/ftp/python/%PYTHON_VERSION%/%PYTHON_SETUP%
+          curl -o D:\%PYTHON_SETUP% https://www.python.org/ftp/python/%PYTHON_VERSION%/%PYTHON_SETUP%
+          echo D:\%PYTHON_SETUP% /quiet TargetDir=%PYTHON_PATH%
+          D:\%PYTHON_SETUP% /quiet TargetDir=%PYTHON_PATH%
+          dir D:\%PYTHON_SETUP%
+          dir %PYTHON_COMMAND%
+          choco install nasm iasl -y
 
       - name: Clone Repo
         run: git clone --recurse-submodules %GITHUB_REPOSITORY_URL% %EDK2_PATH%
@@ -55,14 +64,6 @@ jobs:
       # - name: Break
       #   run: |
       #     dir this_file_does_not_exist.txt
-
-      - name: Install Python 3.12.9, NASM, IASL
-        run: |
-          echo curl -o D:\%PYTHON_SETUP% https://www.python.org/ftp/python/%PYTHON_VERSION%/%PYTHON_SETUP%
-          curl -o D:\%PYTHON_SETUP% https://www.python.org/ftp/python/%PYTHON_VERSION%/%PYTHON_SETUP%
-          echo D:\%PYTHON_SETUP% /quiet TargetDir=%PYTHON_PATH%
-          D:\%PYTHON_SETUP% /quiet TargetDir=%PYTHON_PATH%
-          choco install nasm iasl -y
 
       - name: Install Pip Requirements
         run: |
@@ -147,5 +148,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: build-artifact
-          path: D:\artifact\**\*
+          path: ${{ env. }}\**\*
 
