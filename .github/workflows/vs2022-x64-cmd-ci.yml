@@ -76,7 +76,7 @@ jobs:
           ARCH: X64
           TRGT: DEBUG
         continue-on-error: true
-        run: D:\Python312\python.exe %EDK2_PATH%\BaseTools/Edk2ToolsBuild.py -t %CHAIN%
+        run: pushd "%EDK2_PATH%\" & D:\Python312\python.exe BaseTools\Edk2ToolsBuild.py -t %CHAIN%
 
       - name: savegame
         env:
