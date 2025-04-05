@@ -21,7 +21,7 @@ jobs:
 
       - name: Dir C
         continue-on-error: true
-        run: pushd C:\ & dir        
+        run: pushd C:\ & dir /s/b nasm.exe clang.exe *asl.exe       
 
       - name: Dir D
         continue-on-error: true
