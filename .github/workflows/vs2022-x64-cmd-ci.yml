@@ -10,10 +10,10 @@ jobs:
       run:
         shell: cmd        
     steps:
-      - name: Clone Repo
-        env:
-          EDK2_PATH: D:\EDK2
-        run: git clone https://github.com/tianocore/edk2.git %EDK2_PATH%
+      # - name: Clone Repo
+      #   env:
+      #     EDK2_PATH: D:\EDK2
+      #   run: git clone https://github.com/tianocore/edk2.git %EDK2_PATH%
 
       # - name: Clone Repo
       #   env:
@@ -51,11 +51,17 @@ jobs:
       #     PYTHON_COMMAND: D:\VENV\Scripts\python.exe
       #   run: D:\VENV\Scripts\python.exe -m pip install --upgrade pip
 
-      - name: Install Requirements
+      - name: Install Python 3.12
         env:
           PYTHON_COMMAND: D:\VENV\Scripts\python.exe
           EDK2_PATH: D:\EDK2
-        run: python -m pip install -r "%EDK2_PATH%\pip-requirements.txt"
+        run: choco install python312
+
+      # - name: Install Requirements
+      #   env:
+      #     PYTHON_COMMAND: D:\VENV\Scripts\python.exe
+      #     EDK2_PATH: D:\EDK2
+      #   run: python -m pip install -r "%EDK2_PATH%\pip-requirements.txt"
 
       - name: savegame
         env:
@@ -70,4 +76,4 @@ jobs:
           ARCH: X64
           TRGT: DEBUG
         continue-on-error: true
-        run: where python.exe
+        run: where python.exe & python.exe -V
