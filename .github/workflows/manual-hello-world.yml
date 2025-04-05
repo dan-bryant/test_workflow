@@ -13,10 +13,8 @@ jobs:
     steps:
       - name: Move to root
         run: cd \
-      - name: Find ASL
-        run: dir /s/b *asl.exe
-      - name: Find NASM
-        run: dir /s/b nasm.exe
       - name: Find CLang
         run: dir /s/b clang.exe
+      - name: Find NASM
+        run: dir /s/b nasm.exe
       
