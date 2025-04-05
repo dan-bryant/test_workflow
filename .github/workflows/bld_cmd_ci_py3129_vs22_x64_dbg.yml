@@ -19,7 +19,7 @@ jobs:
       PYTHON_VERSION: 3.12.9
       PYTHON_SETUP: python-3.12.9-amd64.exe
       STUART: D:\Python312\Scripts\stuart
-      GITHUB_REPOSITORY_URL: ${{ github.server_url }}/${{ github.repository }}
+      GH_REPO_URL: ${{ github.server_url }}/${{ github.repository }}
       REPO_PATH: D:\r
       EDK2_PATH: D:\r\Edk2
       ARTIFACT_PATH: D:\artifact
@@ -34,8 +34,12 @@ jobs:
       # - name: Clone Repo
       #   run: git clone https://github.com/tianocore/edk2.git %EDK2_PATH%
 
+      - name: Test Gather
+        run: |
+          for %p in (a b c) do (echo %p)
+
       - name: Clone Repo
-        run: git clone --recurse-submodules --depth 1 --shallow-submodules %GITHUB_REPOSITORY_URL% %REPO_PATH%
+        run: git clone --recurse-submodules --depth 1 --shallow-submodules %GH_REPO_URL% %REPO_PATH%
 
       # - name: Checkout Repository recursively with long-files
       #   uses: actions/checkout@v4
