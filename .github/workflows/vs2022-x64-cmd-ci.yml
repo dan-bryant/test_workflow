@@ -41,10 +41,20 @@ jobs:
       #     NASM_PREFIX: C:\Program Files\NASM\
       #   run: dir /s/b "%NASM_PREFIX%\nasm.exe"
 
-      - name: Download Python 3.12
+      - name: Install Python 3.12
         env:
+          PYTHON_PATH: D:\Python312
           PYTHON_SETUP: D:\python-3.12.0-amd64.exe
-        run: curl -o %PYTHON_SETUP% https://www.python.org/ftp/python/3.12.0/python-3.12.0-amd64.exe
+        run: |
+          curl -o %PYTHON_SETUP% https://www.python.org/ftp/python/3.12.0/python-3.12.0-amd64.exe
+          %PYTHON_SETUP% /quiet TargetDir=%PYTHON_PATH%
+
+      - name: Break
+        env:
+          PYTHON_PATH: D:\Python312
+          PYTHON_SETUP: D:\python-3.12.0-amd64.exe
+        run: |
+          dir this_file_does_not_exist.txt
 
       - name: Install Python 3.12
         env:
