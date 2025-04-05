@@ -7,18 +7,27 @@ on:
 jobs:
   build:
     runs-on: windows-2022 # Use the Windows Server 2022 runner
+    env:
+      IASL_PREFIX: C:\ProgramData\chocolatey\bin\
+      CLANG_BIN: C:\Program Files\LLVM\bin\
+      NASM_PREFIX: C:\Program Files\NASM\
+      PYTHON_COMMAND: D:\Python312\python.exe
+      PYTHON_PATH: D:\Python312
+      PYTHON_SETUP: D:\python-3.12.0-amd64.exe
+      STUART: D:\Python312\Scripts\stuart
+      EDK2_PATH: D:\EDK2
+      ARTIFACT_PATH: D:\artifact
+      CHAIN: VS2022
+      ARCH: X64
+      TRGT: DEBUG
     defaults:
       run:
         shell: cmd
     steps:
       # - name: Clone Repo
-      #   env:
-      #     EDK2_PATH: D:\EDK2
       #   run: git clone https://github.com/tianocore/edk2.git %EDK2_PATH%
 
       - name: Clone Repo
-        env:
-          EDK2_PATH: D:\EDK2
         run: git clone --recurse-submodules https://github.com/tianocore/edk2.git %EDK2_PATH%
 
       # - name: Install NASM
@@ -28,70 +37,36 @@ jobs:
       #   run: choco install iasl -y
 
       # - name: Find IASL
-      #   env:
-      #     IASL_PREFIX: C:\ProgramData\chocolatey\bin\
       #   run: dir /s/b "%IASL_PREFIX%\iasl.exe"
 
       # - name: Find CLANG
-      #   env:
-      #     CLANG_BIN: C:\Program Files\LLVM\bin\
       #   run: dir /s/b "%CLANG_BIN%\clang.exe"
 
       # - name: Find NASM
-      #   env:
-      #     NASM_PREFIX: C:\Program Files\NASM\
       #   run: dir /s/b "%NASM_PREFIX%\nasm.exe"
 
       - name: Install Python 3.12, NASM, IASL
-        env:
-          PYTHON_PATH: D:\Python312
-          PYTHON_SETUP: D:\python-3.12.0-amd64.exe
         run: |
           curl -o %PYTHON_SETUP% https://www.python.org/ftp/python/3.12.0/python-3.12.0-amd64.exe
           %PYTHON_SETUP% /quiet TargetDir=%PYTHON_PATH%
           choco install nasm iasl -y
 
       # - name: Break
-      #   env:
-      #     PYTHON_PATH: D:\Python312
-      #     PYTHON_SETUP: D:\python-3.12.0-amd64.exe
       #   run: |
       #     dir this_file_does_not_exist.txt
 
       - name: Install Pip Requirements
-        env:
-          PYTHON_COMMAND: D:\Python312\python.exe
-          EDK2_PATH: D:\EDK2
         run: |
           %PYTHON_COMMAND% -m pip install --upgrade pip
           %PYTHON_COMMAND% -m pip install -r "%EDK2_PATH%\pip-requirements.txt"
 
       - name: Build BaseTools
-        env:
-          IASL_PREFIX: C:\ProgramData\chocolatey\bin\
-          CLANG_BIN: C:\Program Files\LLVM\bin\
-          NASM_PREFIX: C:\Program Files\NASM\
-          PYTHON_PATH: D:\Python312
-          PYTHON_COMMAND: D:\Python312\python.exe
-          EDK2_PATH: D:\EDK2
-          CHAIN: VS2022
         run: |
           pushd "%EDK2_PATH%"
           call edksetup.bat %CHAIN%
           %PYTHON_COMMAND% BaseTools\Edk2ToolsBuild.py -t %CHAIN%
 
       - name: Setup and update Build_All
-        env:
-          IASL_PREFIX: C:\ProgramData\chocolatey\bin\
-          CLANG_BIN: C:\Program Files\LLVM\bin\
-          NASM_PREFIX: C:\Program Files\NASM\
-          PYTHON_COMMAND: D:\Python312\python.exe
-          PYTHON_PATH: D:\Python312
-          STUART: D:\Python312\Scripts\stuart
-          EDK2_PATH: D:\EDK2
-          CHAIN: VS2022
-          ARCH: X64
-          TRGT: DEBUG
         run: |
           pushd "%EDK2_PATH%"
           call edksetup.bat %CHAIN%
@@ -99,17 +74,6 @@ jobs:
           %STUART%_update -c .pytool\CISettings.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
 
       - name: Build Build_All
-        env:
-          IASL_PREFIX: C:\ProgramData\chocolatey\bin\
-          CLANG_BIN: C:\Program Files\LLVM\bin\
-          NASM_PREFIX: C:\Program Files\NASM\
-          PYTHON_COMMAND: D:\Python312\python.exe
-          PYTHON_PATH: D:\Python312
-          STUART: D:\Python312\Scripts\stuart
-          EDK2_PATH: D:\EDK2
-          CHAIN: VS2022
-          ARCH: X64
-          TRGT: DEBUG
         # Compiler #2065: EmbeddedPkg\...\VirtualRealTimeClockLib.c(89): 'BUILD_EPOCH': undeclared
         continue-on-error: true 
         run: |
@@ -118,17 +82,6 @@ jobs:
           %STUART%_ci_build -c .pytool\CISettings.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
 
       - name: Setup and update EmulatorPkg
-        env:
-          IASL_PREFIX: C:\ProgramData\chocolatey\bin\
-          CLANG_BIN: C:\Program Files\LLVM\bin\
-          NASM_PREFIX: C:\Program Files\NASM\
-          PYTHON_COMMAND: D:\Python312\python.exe
-          PYTHON_PATH: D:\Python312
-          STUART: D:\Python312\Scripts\stuart
-          EDK2_PATH: D:\EDK2
-          CHAIN: VS2022
-          ARCH: X64
-          TRGT: DEBUG
         run: |
           pushd "%EDK2_PATH%"
           call edksetup.bat %CHAIN%
@@ -136,34 +89,12 @@ jobs:
           %STUART%_update -c EmulatorPkg\PlatformCI\PlatformBuild.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
 
       - name: Build EmulatorPkg
-        env:
-          IASL_PREFIX: C:\ProgramData\chocolatey\bin\
-          CLANG_BIN: C:\Program Files\LLVM\bin\
-          NASM_PREFIX: C:\Program Files\NASM\
-          PYTHON_COMMAND: D:\Python312\python.exe
-          PYTHON_PATH: D:\Python312
-          STUART: D:\Python312\Scripts\stuart
-          EDK2_PATH: D:\EDK2
-          CHAIN: VS2022
-          ARCH: X64
-          TRGT: DEBUG
         run: |
           pushd "%EDK2_PATH%"
           call edksetup.bat %CHAIN%
           %STUART%_build -c EmulatorPkg\PlatformCI\PlatformBuild.py -a %ARCH% TOOL_CHAIN_TAG=%CHAIN% TARGET=%TRGT%
 
       - name: Setup and update OvmfPkg
-        env:
-          IASL_PREFIX: C:\ProgramData\chocolatey\bin\
-          CLANG_BIN: C:\Program Files\LLVM\bin\
-          NASM_PREFIX: C:\Program Files\NASM\
-          PYTHON_COMMAND: D:\Python312\python.exe
-          PYTHON_PATH: D:\Python312
-          STUART: D:\Python312\Scripts\stuart
-          EDK2_PATH: D:\EDK2
-          CHAIN: VS2022
-          ARCH: X64
-          TRGT: DEBUG
         run: |
           pushd "%EDK2_PATH%"
           call edksetup.bat %CHAIN%
@@ -171,49 +102,22 @@ jobs:
           %STUART%_update -c OvmfPkg\PlatformCI\PlatformBuild.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
 
       - name: Build OvmfPkg
-        env:
-          IASL_PREFIX: C:\ProgramData\chocolatey\bin\
-          CLANG_BIN: C:\Program Files\LLVM\bin\
-          NASM_PREFIX: C:\Program Files\NASM\
-          PYTHON_COMMAND: D:\Python312\python.exe
-          PYTHON_PATH: D:\Python312
-          STUART: D:\Python312\Scripts\stuart
-          EDK2_PATH: D:\EDK2
-          CHAIN: VS2022
-          ARCH: X64
-          TRGT: DEBUG
         run: |
           pushd "%EDK2_PATH%"
           call edksetup.bat %CHAIN%
           %STUART%_build -c OvmfPkg\PlatformCI\PlatformBuild.py -a %ARCH% TOOL_CHAIN_TAG=%CHAIN% TARGET=%TRGT%
 
-      - name: Package Build Outputs
-        env:
-          EDK2_PATH: D:\EDK2
-          ARTIFACT_PATH: D:\artifact
-        run: |
-          mkdir %ARTIFACT_PATH%
-          robocopy %EDK2_PATH%\Build %ARTIFACT_PATH% /E
+      # - name: Package Build Outputs
+      #   run: |
+      #     mkdir %ARTIFACT_PATH%
+      #     robocopy %EDK2_PATH%\Build %ARTIFACT_PATH% /E
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: build-artifact  # Name of the artifact
-          path: D:\artifact     # Path to the files or directory to upload
+          name: build-artifact
+          path: D:\EDK2\Build\**\*
 
       - name: savegame
-        env:
-          IASL_PREFIX: C:\ProgramData\chocolatey\bin\
-          CLANG_BIN: C:\Program Files\LLVM\bin\
-          NASM_PREFIX: C:\Program Files\NASM\
-          PYTHON_COMMAND: D:\Python312\python.exe
-          PYTHON_PATH: D:\Python312
-          PYTHON_SETUP: D:\python-3.12.0-amd64.exe
-          STUART: D:\Python312\Scripts\stuart
-          EDK2_PATH: D:\EDK2
-          ARTIFACT_PATH: D:\artifact
-          CHAIN: VS2022
-          ARCH: X64
-          TRGT: DEBUG
         continue-on-error: true
         run: dir /s/b D:\Python312\stuart_update*
