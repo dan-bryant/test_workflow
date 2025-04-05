@@ -20,7 +20,7 @@ jobs:
       PYTHON_SETUP: python-3.12.9-amd64.exe
       STUART: ${{ github.workspace }}\Python312\Scripts\stuart
       GITHUB_REPOSITORY_URL: ${{ github.server_url }}/${{ github.repository }}      
-      REPO_PATH: ${{ github.workspace }}
+      REPO_PATH: D:\
       EDK2_PATH: ${{ github.workspace }}\Edk2
       ARTIFACT_PATH: ${{ github.workspace }}\artifact
       EMU_HOST: WinHost
@@ -37,7 +37,7 @@ jobs:
       # - name: Clone Repo
       #   run: git clone --recurse-submodules %GITHUB_REPOSITORY_URL% %REPO_PATH%
 
-      - name: Checkout Repository with Long Path Support
+      - name: Checkout Repository recursively with long-files
         uses: actions/checkout@v4
         with:
           submodules: recursive     # Initialize and update submodules
