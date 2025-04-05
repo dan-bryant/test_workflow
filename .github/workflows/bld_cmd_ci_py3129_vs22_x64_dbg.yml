@@ -20,8 +20,8 @@ jobs:
       PYTHON_SETUP: python-3.12.9-amd64.exe
       STUART: ${{ github.workspace }}\Python312\Scripts\stuart
       GITHUB_REPOSITORY_URL: ${{ github.server_url }}/${{ github.repository }}      
-      REPO_PATH: ${{ github.workspace }}\REPO
-      EDK2_PATH: ${{ github.workspace }}\REPO\Edk2
+      REPO_PATH: ${{ github.workspace }}
+      EDK2_PATH: ${{ github.workspace }}\Edk2
       ARTIFACT_PATH: ${{ github.workspace }}\artifact
       EMU_HOST: WinHost
       CHAIN: VS2022
