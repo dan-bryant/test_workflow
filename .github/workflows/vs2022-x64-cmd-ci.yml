@@ -4,7 +4,7 @@ on:
   workflow_dispatch: # Allows the workflow to be triggered manually
 
 jobs:
-  install:
+  build:
     runs-on: windows-2022 # Use the Windows Server 2022 runner
     defaults:
       run:
@@ -55,7 +55,7 @@ jobs:
         env:
           PYTHON_COMMAND: D:\VENV\Scripts\python.exe
           EDK2_PATH: D:\EDK2
-        run: choco install python312 -y
+        run: choco install python --version=3.12.9 -y
 
       # - name: Install Requirements
       #   env:
@@ -76,4 +76,4 @@ jobs:
           ARCH: X64
           TRGT: DEBUG
         continue-on-error: true
-        run: c:\python312\python.exe -V
+        run: python -V
