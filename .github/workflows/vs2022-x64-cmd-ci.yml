@@ -32,17 +32,24 @@ jobs:
         run: dir /s/b "%NASM_PREFIX%\nasm.exe"
 
       - name: Create VENV
-        run: python -m venv .venv
+        env:
+          VENV: D:\VENV
+          PYTHON_PATH: D:\VENV\Scripts
+          PYTHON_COMMAND: D:\VENV\Scripts\python.exe
+        run: python -m venv %VENV%
 
       - name: savegame
         env:
           IASL_PREFIX: C:\ProgramData\chocolatey\bin\
           CLANG_BIN: C:\Program Files\LLVM\bin\
           NASM_PREFIX: C:\Program Files\NASM\
+          VENV: D:\VENV
+          PYTHON_PATH: D:\VENV\Scripts
+          PYTHON_COMMAND: D:\VENV\Scripts\python.exe
           CHAIN: VS2022
           ARCH: X64
           TRGT: DEBUG
         continue-on-error: true
-        run: echo "%CD%"
+        run: dir "%PYTHON_COMMAND%"
 
               
