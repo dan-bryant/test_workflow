@@ -8,7 +8,7 @@ jobs:
     runs-on: windows-2022 # Use the Windows Server 2022 runner
     defaults:
       run:
-        shell: cmd        
+        shell: cmd
     steps:
       # - name: Clone Repo
       #   env:
@@ -26,43 +26,42 @@ jobs:
       - name: Install IASL
         run: choco install iasl -y
 
-      - name: Find IASL
-        env:
-          IASL_PREFIX: C:\ProgramData\chocolatey\bin\
-        run: dir /s/b "%IASL_PREFIX%\iasl.exe"
+      # - name: Find IASL
+      #   env:
+      #     IASL_PREFIX: C:\ProgramData\chocolatey\bin\
+      #   run: dir /s/b "%IASL_PREFIX%\iasl.exe"
 
-      - name: Find CLANG
-        env:
-          CLANG_BIN: C:\Program Files\LLVM\bin\
-        run: dir /s/b "%CLANG_BIN%\clang.exe"
+      # - name: Find CLANG
+      #   env:
+      #     CLANG_BIN: C:\Program Files\LLVM\bin\
+      #   run: dir /s/b "%CLANG_BIN%\clang.exe"
 
-      - name: Find NASM
-        env:
-          NASM_PREFIX: C:\Program Files\NASM\
-        run: dir /s/b "%NASM_PREFIX%\nasm.exe"
-      
+      # - name: Find NASM
+      #   env:
+      #     NASM_PREFIX: C:\Program Files\NASM\
+      #   run: dir /s/b "%NASM_PREFIX%\nasm.exe"
+
       - name: Download Python 3.12
         env:
-          PYTHON_COMMAND: D:\VENV\Scripts\python.exe
-          EDK2_PATH: D:\EDK2
-        run: curl -o D:\python-3.12.0-amd64.exe https://www.python.org/ftp/python/3.12.0/python-3.12.0-amd64.exe
+          PYTHON_SETUP: D:\python-3.12.0-amd64.exe
+        run: curl -o %PYTHON_SETUP% https://www.python.org/ftp/python/3.12.0/python-3.12.0-amd64.exe
 
       - name: Install Python 3.12
         env:
-          PYTHON_COMMAND: D:\VENV\Scripts\python.exe
-          EDK2_PATH: D:\EDK2
-        run: D:\python-3.12.0-amd64.exe /quiet TargetDir=D:\Python312
+          PYTHON_PATH: D:\Python312
+          PYTHON_SETUP: D:\python-3.12.0-amd64.exe
+        run: pushd.& %PYTHON_SETUP% /quiet TargetDir=%PYTHON_PATH%
 
       - name: Upgrade pip
         env:
-          PYTHON_COMMAND: D:\VENV\Scripts\python.exe
-        run: D:\Python312\python.exe -m pip install --upgrade pip
+          PYTHON_COMMAND: D:\Python312\python.exe
+        run: pushd.& %PYTHON_COMMAND% -m pip install --upgrade pip
 
       - name: Install Requirements
         env:
-          PYTHON_COMMAND: D:\VENV\Scripts\python.exe
+          PYTHON_COMMAND: D:\Python312\python.exe
           EDK2_PATH: D:\EDK2
-        run: D:\Python312\python.exe -m pip install -r "%EDK2_PATH%\pip-requirements.txt"
+        run: pushd.& %PYTHON_COMMAND% -m pip install -r "%EDK2_PATH%\pip-requirements.txt"
 
       - name: Build BaseTools
         env:
@@ -72,19 +71,58 @@ jobs:
           PYTHON_PATH: D:\Python312
           PYTHON_COMMAND: D:\Python312\python.exe
           EDK2_PATH: D:\EDK2
+        run: pushd "%EDK2_PATH%" & %PYTHON_COMMAND% BaseTools\Edk2ToolsBuild.py -t %CHAIN%
+
+      - name: Setup Emulator
+        env:
+          IASL_PREFIX: C:\ProgramData\chocolatey\bin\
+          CLANG_BIN: C:\Program Files\LLVM\bin\
+          NASM_PREFIX: C:\Program Files\NASM\
+          PYTHON_COMMAND: D:\Python312\python.exe
+          PYTHON_PATH: D:\Python312
+          STUART: D:\Python312\Scripts\stuart
+          EDK2_PATH: D:\EDK2
           CHAIN: VS2022
           ARCH: X64
           TRGT: DEBUG
-        continue-on-error: true
-        run: pushd "%EDK2_PATH%\" & D:\Python312\python.exe BaseTools\Edk2ToolsBuild.py -t %CHAIN%
+        run: pushd "%EDK2_PATH%" & %STUART%_setup -c EmulatorPkg\PlatformCI\PlatformBuild.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
+
+      - name: Update Emulator
+        env:
+          IASL_PREFIX: C:\ProgramData\chocolatey\bin\
+          CLANG_BIN: C:\Program Files\LLVM\bin\
+          NASM_PREFIX: C:\Program Files\NASM\
+          PYTHON_COMMAND: D:\Python312\python.exe
+          PYTHON_PATH: D:\Python312
+          STUART: D:\Python312\Scripts\stuart
+          EDK2_PATH: D:\EDK2
+          CHAIN: VS2022
+          ARCH: X64
+          TRGT: DEBUG
+        run: pushd "%EDK2_PATH%" & %STUART%_update -c EmulatorPkg\PlatformCI\PlatformBuild.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
+
+      - name: Build Emulator
+        env:
+          IASL_PREFIX: C:\ProgramData\chocolatey\bin\
+          CLANG_BIN: C:\Program Files\LLVM\bin\
+          NASM_PREFIX: C:\Program Files\NASM\
+          PYTHON_COMMAND: D:\Python312\python.exe
+          PYTHON_PATH: D:\Python312
+          STUART: D:\Python312\Scripts\stuart
+          EDK2_PATH: D:\EDK2
+          CHAIN: VS2022
+          ARCH: X64
+          TRGT: DEBUG
+        run: pushd "%EDK2_PATH%" & %STUART%_build -c EmulatorPkg\PlatformCI\PlatformBuild.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
 
       - name: savegame
         env:
           IASL_PREFIX: C:\ProgramData\chocolatey\bin\
           CLANG_BIN: C:\Program Files\LLVM\bin\
           NASM_PREFIX: C:\Program Files\NASM\
-          PYTHON_PATH: D:\Python312
           PYTHON_COMMAND: D:\Python312\python.exe
+          PYTHON_PATH: D:\Python312
+          STUART: D:\Python312\Scripts\stuart
           EDK2_PATH: D:\EDK2
           CHAIN: VS2022
           ARCH: X64
