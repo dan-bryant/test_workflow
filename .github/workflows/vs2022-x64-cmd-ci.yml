@@ -114,7 +114,7 @@ jobs:
           CHAIN: VS2022
           ARCH: X64
           TRGT: DEBUG
-        run: pushd "%EDK2_PATH%" & %STUART%_build -c EmulatorPkg\PlatformCI\PlatformBuild.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
+        run: pushd "%EDK2_PATH%" & %STUART%_build -c EmulatorPkg\PlatformCI\PlatformBuild.py -a %ARCH% TOOL_CHAIN_TAG=%CHAIN% TARGET=%TRGT%
 
       - name: savegame
         env:
