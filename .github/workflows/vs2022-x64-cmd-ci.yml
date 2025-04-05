@@ -15,32 +15,16 @@ jobs:
       #     EDK2_PATH: D:\EDK2
       #   run: git clone https://github.com/tianocore/edk2.git %EDK2_PATH%
 
-      - name: Install Python 3.12
-        env:
-          PYTHON_PATH: D:\Python312
-          PYTHON_SETUP: D:\python-3.12.0-amd64.exe
-        run: |
-          curl -o %PYTHON_SETUP% https://www.python.org/ftp/python/3.12.0/python-3.12.0-amd64.exe
-          %PYTHON_SETUP% /quiet TargetDir=%PYTHON_PATH%
-          dir %PYTHON_PATH%
-
-      - name: Break
-        env:
-          PYTHON_PATH: D:\Python312
-          PYTHON_SETUP: D:\python-3.12.0-amd64.exe
-        run: |
-          dir this_file_does_not_exist.txt
-
       - name: Clone Repo
         env:
           EDK2_PATH: D:\EDK2
         run: git clone --recurse-submodules https://github.com/tianocore/edk2.git %EDK2_PATH%
 
-      - name: Install NASM
-        run: choco install nasm -y
+      # - name: Install NASM
+      #   run: choco install nasm -y
 
-      - name: Install IASL
-        run: choco install iasl -y
+      # - name: Install IASL
+      #   run: choco install iasl -y
 
       # - name: Find IASL
       #   env:
@@ -57,37 +41,29 @@ jobs:
       #     NASM_PREFIX: C:\Program Files\NASM\
       #   run: dir /s/b "%NASM_PREFIX%\nasm.exe"
 
-      - name: Install Python 3.12
+      - name: Install Python 3.12, NASM, IASL
         env:
           PYTHON_PATH: D:\Python312
           PYTHON_SETUP: D:\python-3.12.0-amd64.exe
         run: |
           curl -o %PYTHON_SETUP% https://www.python.org/ftp/python/3.12.0/python-3.12.0-amd64.exe
           %PYTHON_SETUP% /quiet TargetDir=%PYTHON_PATH%
+          choco install nasm iasl -y
 
-      - name: Break
-        env:
-          PYTHON_PATH: D:\Python312
-          PYTHON_SETUP: D:\python-3.12.0-amd64.exe
-        run: |
-          dir this_file_does_not_exist.txt
+      # - name: Break
+      #   env:
+      #     PYTHON_PATH: D:\Python312
+      #     PYTHON_SETUP: D:\python-3.12.0-amd64.exe
+      #   run: |
+      #     dir this_file_does_not_exist.txt
 
-      - name: Install Python 3.12
-        env:
-          PYTHON_PATH: D:\Python312
-          PYTHON_SETUP: D:\python-3.12.0-amd64.exe
-        run: pushd.& %PYTHON_SETUP% /quiet TargetDir=%PYTHON_PATH%
-
-      - name: Upgrade pip
-        env:
-          PYTHON_COMMAND: D:\Python312\python.exe
-        run: pushd.& %PYTHON_COMMAND% -m pip install --upgrade pip
-
-      - name: Install Requirements
+      - name: Install Pip Requirements
         env:
           PYTHON_COMMAND: D:\Python312\python.exe
           EDK2_PATH: D:\EDK2
-        run: pushd.& %PYTHON_COMMAND% -m pip install -r "%EDK2_PATH%\pip-requirements.txt"
+        run: |
+          %PYTHON_COMMAND% -m pip install --upgrade pip
+          %PYTHON_COMMAND% -m pip install -r "%EDK2_PATH%\pip-requirements.txt"
 
       - name: Build BaseTools
         env:
@@ -98,7 +74,10 @@ jobs:
           PYTHON_COMMAND: D:\Python312\python.exe
           EDK2_PATH: D:\EDK2
           CHAIN: VS2022
-        run: pushd "%EDK2_PATH%" & %PYTHON_COMMAND% BaseTools\Edk2ToolsBuild.py -t %CHAIN%
+        run: |
+          pushd "%EDK2_PATH%"
+          call edksetup.bat %CHAIN%
+          %PYTHON_COMMAND% BaseTools\Edk2ToolsBuild.py -t %CHAIN%
 
       - name: Setup Build_All
         env:
@@ -112,7 +91,10 @@ jobs:
           CHAIN: VS2022
           ARCH: X64
           TRGT: DEBUG
-        run: pushd "%EDK2_PATH%" & %STUART%_setup -c .pytool\CISettings.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
+        run: |
+          pushd "%EDK2_PATH%"
+          call edksetup.bat %CHAIN%
+          %STUART%_setup -c .pytool\CISettings.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
 
       - name: Update Build_All
         env:
@@ -126,7 +108,10 @@ jobs:
           CHAIN: VS2022
           ARCH: X64
           TRGT: DEBUG
-        run: pushd "%EDK2_PATH%" & %STUART%_update -c .pytool\CISettings.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
+        run: |
+          pushd "%EDK2_PATH%"
+          call edksetup.bat %CHAIN%
+          %STUART%_update -c .pytool\CISettings.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
 
       - name: Build Build_All
         env:
@@ -140,7 +125,12 @@ jobs:
           CHAIN: VS2022
           ARCH: X64
           TRGT: DEBUG
-        run: pushd "%EDK2_PATH%" & %STUART%_ci_build -c .pytool/CISettings.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
+        # Compiler #2065: EmbeddedPkg\...\VirtualRealTimeClockLib.c(89): 'BUILD_EPOCH': undeclared
+        continue-on-error: true 
+        run: |
+          pushd "%EDK2_PATH%"
+          call edksetup.bat %CHAIN%
+          %STUART%_ci_build -c .pytool\CISettings.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
 
       - name: Setup EmulatorPkg
         env:
@@ -154,7 +144,10 @@ jobs:
           CHAIN: VS2022
           ARCH: X64
           TRGT: DEBUG
-        run: pushd "%EDK2_PATH%" & %STUART%_setup -c EmulatorPkg\PlatformCI\PlatformBuild.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
+        run: |
+          pushd "%EDK2_PATH%"
+          call edksetup.bat %CHAIN%
+          %STUART%_setup -c EmulatorPkg\PlatformCI\PlatformBuild.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
 
       - name: Update EmulatorPkg
         env:
@@ -168,7 +161,10 @@ jobs:
           CHAIN: VS2022
           ARCH: X64
           TRGT: DEBUG
-        run: pushd "%EDK2_PATH%" & %STUART%_update -c EmulatorPkg\PlatformCI\PlatformBuild.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
+        run: |
+          pushd "%EDK2_PATH%"
+          call edksetup.bat %CHAIN%
+          %STUART%_update -c EmulatorPkg\PlatformCI\PlatformBuild.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
 
       - name: Build EmulatorPkg
         env:
@@ -182,7 +178,10 @@ jobs:
           CHAIN: VS2022
           ARCH: X64
           TRGT: DEBUG
-        run: pushd "%EDK2_PATH%" & %STUART%_build -c EmulatorPkg\PlatformCI\PlatformBuild.py -a %ARCH% TOOL_CHAIN_TAG=%CHAIN% TARGET=%TRGT%
+        run: |
+          pushd "%EDK2_PATH%"
+          call edksetup.bat %CHAIN%
+          %STUART%_build -c EmulatorPkg\PlatformCI\PlatformBuild.py -a %ARCH% TOOL_CHAIN_TAG=%CHAIN% TARGET=%TRGT%
 
       - name: Setup OvmfPkg
         env:
@@ -196,7 +195,10 @@ jobs:
           CHAIN: VS2022
           ARCH: X64
           TRGT: DEBUG
-        run: pushd "%EDK2_PATH%" & %STUART%_setup -c OvmfPkg\PlatformCI\PlatformBuild.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
+        run: |
+          pushd "%EDK2_PATH%"
+          call edksetup.bat %CHAIN%
+          %STUART%_setup -c OvmfPkg\PlatformCI\PlatformBuild.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
 
       - name: Update OvmfPkg
         env:
@@ -210,7 +212,10 @@ jobs:
           CHAIN: VS2022
           ARCH: X64
           TRGT: DEBUG
-        run: pushd "%EDK2_PATH%" & %STUART%_update -c OvmfPkg\PlatformCI\PlatformBuild.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
+        run: |
+          pushd "%EDK2_PATH%"
+          call edksetup.bat %CHAIN%
+          %STUART%_update -c OvmfPkg\PlatformCI\PlatformBuild.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
 
       - name: Build OvmfPkg
         env:
@@ -224,7 +229,10 @@ jobs:
           CHAIN: VS2022
           ARCH: X64
           TRGT: DEBUG
-        run: pushd "%EDK2_PATH%" & %STUART%_build -c OvmfPkg\PlatformCI\PlatformBuild.py -a %ARCH% TOOL_CHAIN_TAG=%CHAIN% TARGET=%TRGT%
+        run: |
+          pushd "%EDK2_PATH%"
+          call edksetup.bat %CHAIN%
+          %STUART%_build -c OvmfPkg\PlatformCI\PlatformBuild.py -a %ARCH% TOOL_CHAIN_TAG=%CHAIN% TARGET=%TRGT%
 
       - name: savegame
         env:
