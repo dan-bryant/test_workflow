@@ -20,26 +20,26 @@ jobs:
       #     EDK2_PATH: D:\EDK2
       #   run: git clone --recurse-submodules https://github.com/tianocore/edk2.git %EDK2_PATH%
 
-      # - name: Install NASM
-      #   run: choco install nasm -y
+      - name: Install NASM
+        run: choco install nasm -y
 
-      # - name: Install IASL
-      #   run: choco install iasl -y
+      - name: Install IASL
+        run: choco install iasl -y
 
-      # - name: Find IASL
-      #   env:
-      #     IASL_PREFIX: C:\ProgramData\chocolatey\bin\
-      #   run: dir /s/b "%IASL_PREFIX%\iasl.exe"
+      - name: Find IASL
+        env:
+          IASL_PREFIX: C:\ProgramData\chocolatey\bin\
+        run: dir /s/b "%IASL_PREFIX%\iasl.exe"
 
-      # - name: Find CLANG
-      #   env:
-      #     CLANG_BIN: C:\Program Files\LLVM\bin\
-      #   run: dir /s/b "%CLANG_BIN%\clang.exe"
+      - name: Find CLANG
+        env:
+          CLANG_BIN: C:\Program Files\LLVM\bin\
+        run: dir /s/b "%CLANG_BIN%\clang.exe"
 
-      # - name: Find NASM
-      #   env:
-      #     NASM_PREFIX: C:\Program Files\NASM\
-      #   run: dir /s/b "%NASM_PREFIX%\nasm.exe"
+      - name: Find NASM
+        env:
+          NASM_PREFIX: C:\Program Files\NASM\
+        run: dir /s/b "%NASM_PREFIX%\nasm.exe"
       
       - name: Download Python 3.12
         env:
@@ -53,10 +53,10 @@ jobs:
           EDK2_PATH: D:\EDK2
         run: D:\python-3.12.0-amd64.exe /quiet TargetDir=D:\Python312
 
-      # - name: Upgrade pip
-      #   env:
-      #     PYTHON_COMMAND: D:\VENV\Scripts\python.exe
-      #   run: D:\VENV\Scripts\python.exe -m pip install --upgrade pip
+      - name: Upgrade pip
+        env:
+          PYTHON_COMMAND: D:\VENV\Scripts\python.exe
+        run: D:\Python312\python.exe -m pip install --upgrade pip
 
       - name: Install Requirements
         env:
@@ -76,4 +76,18 @@ jobs:
           ARCH: X64
           TRGT: DEBUG
         continue-on-error: true
-        run: D:\Python312\python.exe -V
+        run: D:\Python312\python.exe %EDK2_PATH%\BaseTools/Edk2ToolsBuild.py -t %CHAIN%
+
+      - name: savegame
+        env:
+          IASL_PREFIX: C:\ProgramData\chocolatey\bin\
+          CLANG_BIN: C:\Program Files\LLVM\bin\
+          NASM_PREFIX: C:\Program Files\NASM\
+          PYTHON_PATH: D:\Python312
+          PYTHON_COMMAND: D:\Python312\python.exe
+          EDK2_PATH: D:\EDK2
+          CHAIN: VS2022
+          ARCH: X64
+          TRGT: DEBUG
+        continue-on-error: true
+        run: dir /s/b D:\Python312\stuart_update*
