@@ -76,7 +76,7 @@ jobs:
 
       - name: Build Build_All
         # Compiler #2065: EmbeddedPkg\...\VirtualRealTimeClockLib.c(89): 'BUILD_EPOCH': undeclared
-        continue-on-error: true 
+        continue-on-error: true
         run: |
           pushd "%EDK2_PATH%"
           call edksetup.bat Reconfig %CHAIN%
@@ -120,6 +120,7 @@ jobs:
           )
 
       - name: Package Build Outputs
+        # Robocopy will likely throw an error on one of these, so ignore and continue
         continue-on-error: true
         run: |
           pushd "%EDK2_PATH%\Build"
@@ -143,4 +144,4 @@ jobs:
         continue-on-error: true
         run: dir /s/b D:\Python312\stuart_update*
 
-      
+
