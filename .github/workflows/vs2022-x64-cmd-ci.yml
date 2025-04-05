@@ -1,0 +1,45 @@
+name: VS2022 X64 CMD CI Build
+
+on:
+  workflow_dispatch: # Allows the workflow to be triggered manually
+
+jobs:
+  hello-world:
+    runs-on: windows-2022 # Use the Windows Server 2022 runner
+    defaults:
+      run:
+        shell: cmd        
+    steps:
+      - name: Install LLVM
+        env:
+          CLANG_DIR: D:\LLVM
+        run: choco install llvm --install-directory "%CLANG_DIR%"
+
+      - name: Install NASM
+        env:
+          CLANG_DIR: D:\LLVM
+          NASM_DIR: D:\NASM
+        run: choco install nasm --install-directory "%NASM_DIR%"
+
+      - name: Install IASL
+        env:
+          CLANG_DIR: D:\LLVM
+          NASM_DIR: D:\NASM
+          IASL_DIR: D:\IASL
+          CHAIN: VS2022
+          ARCH: X64
+          TRGT: DEBUG
+        run: choco install iasl --install-directory "%IASL_DIR%"
+
+      - name: Find Binaries
+        env:
+          CLANG_DIR: D:\LLVM
+          NASM_DIR: D:\NASM
+          IASL_DIR: D:\IASL
+          CHAIN: VS2022
+          ARCH: X64
+          TRGT: DEBUG
+        continue-on-error: true
+        run: dir /s/b %CLANG_DIR%\*.exe %NASM_DIR%\*.exe %IASL_DIR%\*.exe 
+
+              
