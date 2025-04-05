@@ -55,7 +55,7 @@ jobs:
         env:
           PYTHON_COMMAND: D:\VENV\Scripts\python.exe
           EDK2_PATH: D:\EDK2
-        run: choco install python312
+        run: choco install python312 -y
 
       # - name: Install Requirements
       #   env:
@@ -76,4 +76,4 @@ jobs:
           ARCH: X64
           TRGT: DEBUG
         continue-on-error: true
-        run: where python.exe & python.exe -V
+        run: c:\python312\python.exe -V
