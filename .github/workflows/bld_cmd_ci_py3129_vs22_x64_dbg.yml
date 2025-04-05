@@ -34,8 +34,15 @@ jobs:
       # - name: Clone Repo
       #   run: git clone https://github.com/tianocore/edk2.git %EDK2_PATH%
 
-      - name: Clone Repo
-        run: git clone --recurse-submodules %GITHUB_REPOSITORY_URL% %REPO_PATH%
+      # - name: Clone Repo
+      #   run: git clone --recurse-submodules %GITHUB_REPOSITORY_URL% %REPO_PATH%
+
+      - name: Checkout Repository with Long Path Support
+        uses: actions/checkout@v4
+        with:
+          submodules: true          # Initialize and update submodules
+          fetch-depth: 0            # Fetch the full history
+          long-paths: true          # Enable long path support
 
       # - name: Install NASM
       #   run: choco install nasm -y
