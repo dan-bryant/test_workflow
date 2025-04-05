@@ -16,6 +16,7 @@ jobs:
       PYTHON_COMMAND: D:\Python312\python.exe
       PYTHON_PATH: D:\Python312
       PYTHON_VERSION: 3.12.9
+      PYTHON_SETUP_EXE: python-3.12.9-amd64.exe
       PYTHON_SETUP: D:\python-3.12.9-amd64.exe
       STUART: D:\Python312\Scripts\stuart
       GITHUB_REPOSITORY_URL: ${{ github.server_url }}/${{ github.repository }}      
@@ -32,14 +33,6 @@ jobs:
     steps:
       # - name: Clone Repo
       #   run: git clone https://github.com/tianocore/edk2.git %EDK2_PATH%
-
-      - name: Install Python 3.12.9, NASM, IASL
-        run: |
-          echo curl -o %PYTHON_SETUP% https://www.python.org/ftp/python/%PYTHON_VERSION%/%PYTHON_SETUP%
-          curl -o %PYTHON_SETUP% https://www.python.org/ftp/python/%PYTHON_VERSION%/%PYTHON_SETUP%
-          echo %PYTHON_SETUP% /quiet TargetDir=%PYTHON_PATH%
-          %PYTHON_SETUP% /quiet TargetDir=%PYTHON_PATH%
-          choco install nasm iasl -y
 
       - name: Clone Repo
         run: git clone --recurse-submodules %GITHUB_REPOSITORY_URL% %EDK2_PATH%
@@ -63,12 +56,13 @@ jobs:
       #   run: |
       #     dir this_file_does_not_exist.txt
 
-      - name: Debug
+      - name: Install Python 3.12.9, NASM, IASL
         run: |
-          echo %PYTHON_COMMAND% -m pip install --upgrade pip
-          echo %PYTHON_COMMAND% -m pip install -r "%EDK2_PATH%\pip-requirements.txt"
-          dir %PYTHON_COMMAND%
-          dir "%EDK2_PATH%\pip-requirements.txt"
+          echo curl -o D:\%PYTHON_SETUP% https://www.python.org/ftp/python/%PYTHON_VERSION%/%PYTHON_SETUP%
+          curl -o D:\%PYTHON_SETUP% https://www.python.org/ftp/python/%PYTHON_VERSION%/%PYTHON_SETUP%
+          echo D:\%PYTHON_SETUP% /quiet TargetDir=%PYTHON_PATH%
+          D:\%PYTHON_SETUP% /quiet TargetDir=%PYTHON_PATH%
+          choco install nasm iasl -y
 
       - name: Install Pip Requirements
         run: |
