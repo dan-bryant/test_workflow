@@ -6,7 +6,9 @@ on:
 
 jobs:
   build:
-    runs-on: windows-2022 # Use the Windows Server 2022 runner
+    # Use the Windows Server 2022 runner
+    runs-on: windows-2022
+    # https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/accessing-contextual-information-about-workflow-runs
     env:
       IASL_PREFIX: C:\ProgramData\chocolatey\bin\
       CLANG_BIN: C:\Program Files\LLVM\bin\
@@ -16,12 +18,14 @@ jobs:
       PYTHON_VERSION: 3.12.9
       PYTHON_SETUP: D:\python-3.12.9-amd64.exe
       STUART: D:\Python312\Scripts\stuart
-      EDK2_PATH: D:\EDK2
+      GITHUB_REPOSITORY_URL: ${{ github.server_url }}/${{ github.repository }}      
+      REPO_PATH: D:\REPO
+      EDK2_PATH: D:\REPO\Edk2
       ARTIFACT_PATH: D:\artifact
+      EMU_HOST: WinHost
       CHAIN: VS2022
       ARCH: X64
       TRGT: DEBUG
-      EMU_HOST: WinHost
     defaults:
       run:
         shell: cmd
@@ -30,7 +34,7 @@ jobs:
       #   run: git clone https://github.com/tianocore/edk2.git %EDK2_PATH%
 
       - name: Clone Repo
-        run: git clone --recurse-submodules https://github.com/tianocore/edk2.git %EDK2_PATH%
+        run: git clone --recurse-submodules %GITHUB_REPOSITORY_URL% %EDK2_PATH%
 
       # - name: Install NASM
       #   run: choco install nasm -y
@@ -111,8 +115,9 @@ jobs:
 
       - name: Gather VS Environment Data
         run: |
-          pushd "%EDK2_PATH%\Build"
+          pushd "%EDK2_PATH%"
           call edksetup.bat Reconfig %CHAIN%
+          pushd "%CD%\Build"
           set > vmInfoEnvVars.txt
           vswhere -format json > vmInfoVswhere.json
           jq -r ".[0].installationPath" vmInfoVswhere.json > vmInfoVsInstallPath.txt
@@ -141,6 +146,3 @@ jobs:
           name: build-artifact
           path: D:\artifact\**\*
 
-      - name: savegame
-        continue-on-error: true
-        run: dir /s/b D:\Python312\stuart_update*
