@@ -45,7 +45,7 @@ jobs:
         env:
           PYTHON_COMMAND: D:\VENV\Scripts\python.exe
           EDK2_PATH: D:\EDK2
-        run: run vcpkg install python3
+        run: vcpkg install python3
 
       # - name: Create VENV
       #   env:
