@@ -10,6 +10,11 @@ jobs:
       run:
         shell: cmd        
     steps:
+      # - name: Clone Repo
+      #   env:
+      #     EDK2_PATH: D:\EDK2
+      #   run: git clone --recurse-submodules https://github.com/tianocore/edk2.git %EDK2_PATH%
+
       # - name: Install NASM
       #   run: choco install nasm -y
 
@@ -31,15 +36,21 @@ jobs:
       #     NASM_PREFIX: C:\Program Files\NASM\
       #   run: dir /s/b "%NASM_PREFIX%\nasm.exe"
 
-      # - name: Create VENV
-      #   env:
-      #     VENV: D:\VENV
-      #   run: python -m venv %VENV%
-
-      - name: Clone Repo
+      - name: Create VENV
         env:
+          VENV: D:\VENV
+        run: python -m venv %VENV%
+
+      - name: Upgrade pip
+        env:
+          PYTHON_COMMAND: D:\VENV\Scripts\python.exe
+        run: "%PYTHON_COMMAND%" -m pip install --upgrade pip
+
+      - name: Install Requirements
+        env:
+          PYTHON_COMMAND: D:\VENV\Scripts\python.exe
           EDK2_PATH: D:\EDK2
-        run: git clone --recurse-submodules https://github.com/tianocore/edk2.git %EDK2_PATH%
+        run: "%PYTHON_COMMAND%" -m pip install -r "%EDK2_PATH%\pip-requirements.txt"
 
       - name: savegame
         env:
@@ -54,4 +65,4 @@ jobs:
           ARCH: X64
           TRGT: DEBUG
         continue-on-error: true
-        run: dir "EDK2_PATH"
+        run: dir "%PYTHON_COMMAND%"
