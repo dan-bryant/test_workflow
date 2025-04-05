@@ -40,8 +40,7 @@ jobs:
       - name: Checkout Repository with Long Path Support
         uses: actions/checkout@v4
         with:
-          submodules: true          # Initialize and update submodules
-          fetch-depth: 0            # Fetch the full history
+          submodules: recursive     # Initialize and update submodules
           long-paths: true          # Enable long path support
 
       # - name: Install NASM
@@ -71,13 +70,7 @@ jobs:
 
       - name: Install Pip Requirements
         run: |
-          echo %PYTHON_COMMAND% -m pip install --upgrade pip
-          dir %PYTHON_COMMAND%
           %PYTHON_COMMAND% -m pip install --upgrade pip
-          echo %PYTHON_COMMAND% -m pip install -r "%EDK2_PATH%\pip-requirements.txt"
-          dir "%REPO_PATH%"
-          dir "%EDK2_PATH%"
-          dir "%EDK2_PATH%\pip-requirements.txt"
           %PYTHON_COMMAND% -m pip install -r "%EDK2_PATH%\pip-requirements.txt"
 
       - name: Build BaseTools
