@@ -4,17 +4,17 @@ on:
   workflow_dispatch: # Allows the workflow to be triggered manually
 
 jobs:
-  hello-world:
+  install:
     runs-on: windows-2022 # Use the Windows Server 2022 runner
     defaults:
       run:
         shell: cmd        
     steps:
       - name: Install LLVM
-        run: winget install --source winget --id LLVM.LLVM
+        run: choco install llvm
 
       - name: Install NASM
-        run: winget install --source winget --id NASM.NASM
+        run: choco install nasm
 
       - name: Install IASL
         run: choco install iasl
@@ -28,6 +28,6 @@ jobs:
           ARCH: X64
           TRGT: DEBUG
         continue-on-error: true
-        run: dir /s/b %IASL_PREFIX%\*.exe %CLANG_BIN%\*.exe %NASM_PREFIX%\*.exe 
+        run: dir /s/b %IASL_PREFIX%\*.exe %IASL_BIN%\*.exe %IASL_PREFIX%\*.exe 
 
               
