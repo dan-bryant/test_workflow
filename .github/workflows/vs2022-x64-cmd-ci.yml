@@ -19,26 +19,22 @@ jobs:
       - name: Find IASL
         env:
           IASL_PREFIX: C:\ProgramData\chocolatey\bin\
-          CLANG_BIN: C:\Program Files\LLVM\bin\
-          NASM_PREFIX: C:\Program Files\NASM\
-          CHAIN: VS2022
-          ARCH: X64
-          TRGT: DEBUG
-        continue-on-error: true
         run: dir /s/b "%IASL_PREFIX%\iasl.exe"
 
       - name: Find CLANG
         env:
-          IASL_PREFIX: C:\ProgramData\chocolatey\bin\
           CLANG_BIN: C:\Program Files\LLVM\bin\
-          NASM_PREFIX: C:\Program Files\NASM\
-          CHAIN: VS2022
-          ARCH: X64
-          TRGT: DEBUG
-        continue-on-error: true
         run: dir /s/b "%CLANG_BIN%\clang.exe"
 
       - name: Find NASM
+        env:
+          NASM_PREFIX: C:\Program Files\NASM\
+        run: dir /s/b "%NASM_PREFIX%\nasm.exe"
+
+      - name: Create VENV
+        run: python -m venv .venv
+
+      - name: savegame
         env:
           IASL_PREFIX: C:\ProgramData\chocolatey\bin\
           CLANG_BIN: C:\Program Files\LLVM\bin\
@@ -47,6 +43,6 @@ jobs:
           ARCH: X64
           TRGT: DEBUG
         continue-on-error: true
-        run: dir /s/b "%NASM_PREFIX%\nasm.exe"
+        run: echo "%CD%"
 
               
