@@ -35,7 +35,7 @@ jobs:
       #   run: git clone https://github.com/tianocore/edk2.git %EDK2_PATH%
 
       - name: Clone Repo
-        run: git clone --recurse-submodules %GITHUB_REPOSITORY_URL% %EDK2_PATH%
+        run: git clone --recurse-submodules %GITHUB_REPOSITORY_URL% %REPO_PATH%
 
       # - name: Install NASM
       #   run: choco install nasm -y
