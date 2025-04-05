@@ -10,33 +10,36 @@ jobs:
       run:
         shell: cmd        
     steps:
-      - name: Install NASM
-        run: choco install nasm -y
+      # - name: Install NASM
+      #   run: choco install nasm -y
 
-      - name: Install IASL
-        run: choco install iasl -y
+      # - name: Install IASL
+      #   run: choco install iasl -y
 
-      - name: Find IASL
+      # - name: Find IASL
+      #   env:
+      #     IASL_PREFIX: C:\ProgramData\chocolatey\bin\
+      #   run: dir /s/b "%IASL_PREFIX%\iasl.exe"
+
+      # - name: Find CLANG
+      #   env:
+      #     CLANG_BIN: C:\Program Files\LLVM\bin\
+      #   run: dir /s/b "%CLANG_BIN%\clang.exe"
+
+      # - name: Find NASM
+      #   env:
+      #     NASM_PREFIX: C:\Program Files\NASM\
+      #   run: dir /s/b "%NASM_PREFIX%\nasm.exe"
+
+      # - name: Create VENV
+      #   env:
+      #     VENV: D:\VENV
+      #   run: python -m venv %VENV%
+
+      - name: Clone Repo
         env:
-          IASL_PREFIX: C:\ProgramData\chocolatey\bin\
-        run: dir /s/b "%IASL_PREFIX%\iasl.exe"
-
-      - name: Find CLANG
-        env:
-          CLANG_BIN: C:\Program Files\LLVM\bin\
-        run: dir /s/b "%CLANG_BIN%\clang.exe"
-
-      - name: Find NASM
-        env:
-          NASM_PREFIX: C:\Program Files\NASM\
-        run: dir /s/b "%NASM_PREFIX%\nasm.exe"
-
-      - name: Create VENV
-        env:
-          VENV: D:\VENV
-          PYTHON_PATH: D:\VENV\Scripts
-          PYTHON_COMMAND: D:\VENV\Scripts\python.exe
-        run: python -m venv %VENV%
+          EDK2_PATH: D:\EDK2
+        run: git clone --recursive-submodules https://github.com/tianocore/edk2.git %EDK2_PATH%
 
       - name: savegame
         env:
@@ -46,10 +49,9 @@ jobs:
           VENV: D:\VENV
           PYTHON_PATH: D:\VENV\Scripts
           PYTHON_COMMAND: D:\VENV\Scripts\python.exe
+          EDK2_PATH: D:\EDK2
           CHAIN: VS2022
           ARCH: X64
           TRGT: DEBUG
         continue-on-error: true
-        run: dir "%PYTHON_COMMAND%"
-
-              
+        run: dir "EDK2_PATH"
