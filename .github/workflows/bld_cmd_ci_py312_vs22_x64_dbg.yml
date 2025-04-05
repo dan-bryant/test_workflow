@@ -187,6 +187,20 @@ jobs:
           call edksetup.bat %CHAIN%
           %STUART%_build -c OvmfPkg\PlatformCI\PlatformBuild.py -a %ARCH% TOOL_CHAIN_TAG=%CHAIN% TARGET=%TRGT%
 
+      - name: Package Build Outputs
+        env:
+          EDK2_PATH: D:\EDK2
+          ARTIFACT_PATH: D:\artifact
+        run: |
+          mkdir %ARTIFACT_PATH%
+          robocopy %EDK2_PATH%\Build %ARTIFACT_PATH% /E
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-artifact  # Name of the artifact
+          path: D:\artifact     # Path to the files or directory to upload
+
       - name: savegame
         env:
           IASL_PREFIX: C:\ProgramData\chocolatey\bin\
@@ -194,8 +208,10 @@ jobs:
           NASM_PREFIX: C:\Program Files\NASM\
           PYTHON_COMMAND: D:\Python312\python.exe
           PYTHON_PATH: D:\Python312
+          PYTHON_SETUP: D:\python-3.12.0-amd64.exe
           STUART: D:\Python312\Scripts\stuart
           EDK2_PATH: D:\EDK2
+          ARTIFACT_PATH: D:\artifact
           CHAIN: VS2022
           ARCH: X64
           TRGT: DEBUG
