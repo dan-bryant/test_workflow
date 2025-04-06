@@ -1,6 +1,12 @@
 # filename: .github/workflows/bld_cmd_ci.yml
 name: Build with CMD and CI on VS
-run-name: Bld-cmd-ci-vs${{ github.event.inputs.vs_year }}-${{ github.event.inputs.architecture }}-${{ github.event.inputs.target }}-Py_${{ github.event.inputs.python_version }}-Hack_${{ github.event.inputs.hack }}
+run-name: >
+  Bld-cmd-ci
+  -vs${{ github.event.inputs.vs_year }}
+  -${{ github.event.inputs.architecture }}
+  -${{ github.event.inputs.target }}
+  -Py_${{ github.event.inputs.python_version }}
+  -Hack_${{ github.event.inputs.hack }}
 
 on:
   workflow_dispatch:  # Allows the workflow to be triggered manually
@@ -8,7 +14,7 @@ on:
       hack:
         description: "Enable HACK mode"
         required: false
-        default: "true"
+        default: "false"
       full:
         description: "Build the most targets"
         required: false
@@ -34,7 +40,9 @@ jobs:
   build:
     # Use the Windows Server 2022 runner
     runs-on: windows-20${{ github.event.inputs.vs_year }}
-    # https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/accessing-contextual-information-about-workflow-runs
+    # https://docs.github.com/en/actions/writing-workflows
+    #  /choosing-what-your-workflow-does
+    #  /accessing-contextual-information-about-workflow-runs
     env:
       GH_WORKSPACE: ${{ github.workspace }}
       IASL_PREFIX: C:\ProgramData\chocolatey\bin\
@@ -167,13 +175,18 @@ jobs:
             robocopy "%EDK2_PATH%\Build\%%p\All\%TRGT%_%CHAIN%\%ARCH%" "%ARTIFACT_PATH%\%%p\All\%TRGT%_%CHAIN%\%ARCH%" *.efi
             robocopy "%EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\%ARCH%" "%ARTIFACT_PATH%\%%p\%TRGT%_%CHAIN%\%ARCH%" *.efi
             robocopy "%EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\%ARCH%" "%ARTIFACT_PATH%\%%p\%TRGT%_%CHAIN%\%ARCH%" %EMU_HOST%*
-            robocopy "%EDK2_PATH%\Build\%%p\%DEBUG%_%VS2022%\FV" "%ARTIFACT_PATH%\%%p\%DEBUG%_%VS2022%\FV" *
+            robocopy "%EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\FV" "%ARTIFACT_PATH%\%%p\%TRGT%_%CHAIN%\FV" *
           )
 
       # filename: .github/workflows/bld_cmd_ci_vs22.yml
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: build-cmd-ci-vs22-${{ github.event.inputs.architecture }}-${{ github.event.inputs.target }}-Py${{ github.event.inputs.python_version }}
+          name: >
+            build-cmd-ci
+            -vs${{ github.event.inputs.vs_year }}
+            -${{ github.event.inputs.architecture }}
+            -${{ github.event.inputs.target }}
+            -Py${{ github.event.inputs.python_version }}
           path: ${{ env.ARTIFACT_PATH }}\**\*
 
