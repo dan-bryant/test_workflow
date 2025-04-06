@@ -168,28 +168,28 @@ jobs:
           set VOLUME=%ARTIFACT_PATH%\Emulator%ARCH%\%TRGT%_%CHAIN%\%ARCH%\Host
           pushd "%EDK2_PATH%\Build"
           echo "%CD%"
-          robocopy %REPO_PATH%\.github\workflows "%ARTIFACT_PATH%" *.yml
+          xcopy %REPO_PATH%\.github\workflows\*.yml "%ARTIFACT_PATH%" 
           for /d %%p in (. *) do (
             if exist %EDK2_PATH%\Build\%%p\vmInfo* (
-              robocopy "%EDK2_PATH%\Build\%%p" "%ARTIFACT_PATH%\%%p" vmInfo* || echo ERROR: %EDK2_PATH%\Build\%%p\vmInfo*
+              xcopy %EDK2_PATH%\Build\%%p\vmInfo* "%ARTIFACT_PATH%\%%p" /D /Y || echo ERROR: %EDK2_PATH%\Build\%%p\vmInfo*
             )
             if exist %EDK2_PATH%\Build\%%p\BUILDLOG*.txt (
-              robocopy "%EDK2_PATH%\Build\%%p" "%ARTIFACT_PATH%\%%p" BUILDLOG*.txt || echo ERROR: %EDK2_PATH%\Build\%%p\BUILDLOG*.txt
+              xcopy %EDK2_PATH%\Build\%%p\BUILDLOG*.txt "%ARTIFACT_PATH%\%%p" /D /Y || echo ERROR: %EDK2_PATH%\Build\%%p\BUILDLOG*.txt
             )
             if exist %EDK2_PATH%\Build\%%p\*LOG.txt (
-              robocopy "%EDK2_PATH%\Build\%%p" "%ARTIFACT_PATH%\%%p" *LOG.txt || echo ERROR: %EDK2_PATH%\Build\%%p\*LOG.txt
+              xcopy %EDK2_PATH%\Build\%%p\*LOG.txt "%ARTIFACT_PATH%\%%p" /D /Y || echo ERROR: %EDK2_PATH%\Build\%%p\*LOG.txt
             )
             if exist %EDK2_PATH%\Build\%%p\All\%TRGT%_%CHAIN%\%ARCH%\*.efi (
-              robocopy "%EDK2_PATH%\Build\%%p\All\%TRGT%_%CHAIN%\%ARCH%" "%ARTIFACT_PATH%\%%p\%TRGT%_%CHAIN%\%ARCH%" *.efi || echo ERROR: %EDK2_PATH%\Build\%%p\All\%TRGT%_%CHAIN%\%ARCH%\*.efi
+              xcopy %EDK2_PATH%\Build\%%p\All\%TRGT%_%CHAIN%\%ARCH%\*.efi "%ARTIFACT_PATH%\%%p\%TRGT%_%CHAIN%\%ARCH%" /D /Y || echo ERROR: %EDK2_PATH%\Build\%%p\All\%TRGT%_%CHAIN%\%ARCH%\*.efi
             )
             if exist %EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\%ARCH%\*.efi (
-              robocopy "%EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\%ARCH%" "%ARTIFACT_PATH%\%%p\%TRGT%_%CHAIN%\%ARCH%" *.efi || echo ERROR: %EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\%ARCH%\*.efi
+              xcopy %EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\%ARCH%\*.efi "%ARTIFACT_PATH%\%%p\%TRGT%_%CHAIN%\%ARCH%" /D /Y || echo ERROR: %EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\%ARCH%\*.efi
             )
             if exist %EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\%ARCH%\%EMU_HOST%* (
-              robocopy "%EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\%ARCH%" "%VOLUME%" %EMU_HOST%* || echo ERROR: %EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\%ARCH%\%EMU_HOST%*
+              xcopy %EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\%ARCH%\%EMU_HOST%* "%VOLUME%" /D /Y || echo ERROR: %EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\%ARCH%\%EMU_HOST%*
             )
             if exist %EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\FV\* (
-              robocopy "%EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\FV" "%ARTIFACT_PATH%\%%p\%TRGT%_%CHAIN%\FV" * || echo ERROR: %EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\FV\*
+              xcopy %EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\FV\* "%ARTIFACT_PATH%\%%p\%TRGT%_%CHAIN%\FV" /D /Y || echo ERROR: %EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\FV\*
             )
           )
 
