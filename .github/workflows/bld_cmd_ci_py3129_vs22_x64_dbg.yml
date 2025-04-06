@@ -13,15 +13,15 @@ on:
         required: false
         default: "false"
       target:
-        description: "Specify the build target (DEBUG | RELEASE)"
+        description: "Build target (DEBUG | RELEASE)"
         required: false
         default: "RELEASE"  
       architecture:
-        description: "Specify the build architecture (X64 | IA32 | AARM64)"
+        description: "Build architecture (X64 | IA32 | AARM64)"
         required: false
         default: "X64"  
       python_version:
-        description: "Specify the Python version to use"
+        description: "Python version to use"
         required: false
         default: "3.12.9"  
 
