@@ -192,8 +192,8 @@ jobs:
             echo efiVolume: %%~pnxp>> README.txt
           )
           set BAT_FILE=build%CHAIN%-%ARCH%-%TRGT%-Py%PYTHON_VERSION%.bat
-          echo %PYTHON_COMMAND% %REPO_PATH%\%BUILD_BAT% %GH_WORKFLOW_FILE% %BAT_FILE%
-          %PYTHON_COMMAND% %REPO_PATH%\%BUILD_BAT% %GH_WORKFLOW_FILE% %BAT_FILE%
+          echo %PYTHON_COMMAND% %REPO_PATH%\%BUILD_BAT% D:%GH_WORKFLOW_FILE% D:%BAT_FILE% > D:%BAT_FILE%.bat
+          call D:%BAT_FILE%.bat
           echo gitTag: %GH_HEAD_SHA%>> README.txt
           echo workflowFile: %GH_WORKFLOW_FILE%>> README.txt
           echo batFile: %BAT_FILE%>> README.txt
