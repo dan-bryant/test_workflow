@@ -93,7 +93,7 @@ jobs:
           call edksetup.bat Reconfig %CHAIN%
           %PYTHON_COMMAND% BaseTools\Edk2ToolsBuild.py -t %CHAIN%
 
-      - name: Setup and update Build_All
+      - name: Setup and update Edk2
         if: ${{ github.event.inputs.hack != 'true' }}
         run: |
           pushd "%EDK2_PATH%"
@@ -101,7 +101,7 @@ jobs:
           %STUART%_setup -c .pytool\CISettings.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
           %STUART%_update -c .pytool\CISettings.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
 
-      - name: Build Build_All
+      - name: Build Edk2
         # Compiler #2065: EmbeddedPkg\...\VirtualRealTimeClockLib.c(89): 'BUILD_EPOCH': undeclared
         continue-on-error: true
         if: ${{ github.event.inputs.full == 'true' && github.event.inputs.hack != 'true' }}
