@@ -171,32 +171,25 @@ jobs:
           robocopy %REPO_PATH%\.github\workflows "%ARTIFACT_PATH%" *.yml
           for /d %%p in (. *) do (
             if exist %EDK2_PATH%\Build\%%p\vmInfo* (
-              robocopy "%EDK2_PATH%\Build\%%p" "%ARTIFACT_PATH%\%%p" vmInfo*
-              echo RC: !ERRORLEVEL!
+              robocopy "%EDK2_PATH%\Build\%%p" "%ARTIFACT_PATH%\%%p" vmInfo* || echo ERROR: %EDK2_PATH%\Build\%%p\vmInfo*
             )
             if exist %EDK2_PATH%\Build\%%p\BUILDLOG*.txt (
-              robocopy "%EDK2_PATH%\Build\%%p" "%ARTIFACT_PATH%\%%p" BUILDLOG*.txt
-              echo RC: !ERRORLEVEL!
+              robocopy "%EDK2_PATH%\Build\%%p" "%ARTIFACT_PATH%\%%p" BUILDLOG*.txt || echo ERROR: %EDK2_PATH%\Build\%%p\BUILDLOG*.txt
             )
             if exist %EDK2_PATH%\Build\%%p\*LOG.txt (
-              robocopy "%EDK2_PATH%\Build\%%p" "%ARTIFACT_PATH%\%%p" *LOG.txt
-              echo RC: !ERRORLEVEL!
+              robocopy "%EDK2_PATH%\Build\%%p" "%ARTIFACT_PATH%\%%p" *LOG.txt || echo ERROR: %EDK2_PATH%\Build\%%p\*LOG.txt
             )
             if exist %EDK2_PATH%\Build\%%p\All\%TRGT%_%CHAIN%\%ARCH%\*.efi (
-              robocopy "%EDK2_PATH%\Build\%%p\All\%TRGT%_%CHAIN%\%ARCH%" "%ARTIFACT_PATH%\%%p\%TRGT%_%CHAIN%\%ARCH%" *.efi
-              echo RC: !ERRORLEVEL!
+              robocopy "%EDK2_PATH%\Build\%%p\All\%TRGT%_%CHAIN%\%ARCH%" "%ARTIFACT_PATH%\%%p\%TRGT%_%CHAIN%\%ARCH%" *.efi || echo ERROR: %EDK2_PATH%\Build\%%p\All\%TRGT%_%CHAIN%\%ARCH%\*.efi
             )
             if exist %EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\%ARCH%\*.efi (
-              robocopy "%EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\%ARCH%" "%ARTIFACT_PATH%\%%p\%TRGT%_%CHAIN%\%ARCH%" *.efi
-              echo RC: !ERRORLEVEL!
+              robocopy "%EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\%ARCH%" "%ARTIFACT_PATH%\%%p\%TRGT%_%CHAIN%\%ARCH%" *.efi || echo ERROR: %EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\%ARCH%\*.efi
             )
-            if exist %EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\%ARCH%\%EMU_HOST%* (
-              robocopy "%EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\%ARCH%" "%ARTIFACT_PATH%\%%p\%TRGT%_%CHAIN%\%ARCH%" %EMU_HOST%*
-              echo RC: !ERRORLEVEL!
+            if exist %EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\%ARCH%\%EMU_HOST%.* (
+              robocopy "%EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\%ARCH%" "%ARTIFACT_PATH%\%%p\%TRGT%_%CHAIN%\%ARCH%" %EMU_HOST%.* || echo ERROR: %EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\%ARCH%\%EMU_HOST%.*
             )
             if exist %EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\FV\* (
-              robocopy "%EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\FV" "%ARTIFACT_PATH%\%%p\%TRGT%_%CHAIN%\FV" *
-              echo RC: !ERRORLEVEL!
+              robocopy "%EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\FV" "%ARTIFACT_PATH%\%%p\%TRGT%_%CHAIN%\FV" * || echo ERROR: %EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\FV\*
             )
           )
 
