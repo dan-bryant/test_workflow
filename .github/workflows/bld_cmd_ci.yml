@@ -184,7 +184,7 @@ jobs:
           echo %GH_HEAD_SHA% > vmInfo%CHAIN%-%ARCH%-%TRGT%-Py%PYTHON_VERSION%.txt
           dir /s /b /a:-d > repoFileListing.txt
           dir /s /b /a:d > repoDirListing.txt
-          findstr /m /c:"%GH_WORKFLOW_NAME%" .github\workflows\*.yml > repoWorkflowFile.txt
+          findstr /m /c:"%GH_WORKFLOW_NAME%" %REPO_PATH%\.github\workflows\*.yml > repoWorkflowFile.txt
           for /f "delims=;" %%p in (repoWorkflowFile.txt) do (
             set GH_WORKFLOW_FILE=%%~dpp
           )
