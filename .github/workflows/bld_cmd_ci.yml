@@ -10,9 +10,9 @@ on:
         required: false
         default: "false"
       build:
-        description: "Pkg ( OvmfPkg | EmulatorPkg | Edk2 | All )"
+        description: "Pkg ( EmulatorPkg | OvmfPkg | Edk2 | All )"
         required: false
-        default: "OvmfPkg"
+        default: "EmulatorPkg"
       vs_year:
         description: "Visual Studio Year ( 22 | 19 )"
         required: false
