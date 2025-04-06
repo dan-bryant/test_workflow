@@ -43,7 +43,7 @@ jobs:
       IASL_PREFIX: C:\ProgramData\chocolatey\bin\
       CLANG_BIN: C:\Program Files\LLVM\bin\
       NASM_PREFIX: C:\Program Files\NASM\
-      PYTHON_COMMAND: D:\Python${{ github.event.inputs.python_version }}\python.exe
+      PYTHON_COMMAND: python.exe
       PYTHON_PATH: D:\Python${{ github.event.inputs.python_version }}
       PYTHON_VERSION: ${{ github.event.inputs.python_version }}
       PYTHON_SETUP: python-${{ github.event.inputs.python_version }}-amd64.exe
@@ -75,10 +75,10 @@ jobs:
       #     submodules: recursive     # Initialize and update submodules
       #     long-paths: true          # Enable long path support
 
-      - name: Install Python 3.12.9, NASM, IASL
-        run: |
-          curl -o ${{ github.workspace }}\%PYTHON_SETUP% https://www.python.org/ftp/python/%PYTHON_VERSION%/%PYTHON_SETUP%
-          ${{ github.workspace }}\%PYTHON_SETUP% /quiet TargetDir=%PYTHON_PATH%
+      # - name: Install Python 3.12.9, NASM, IASL
+      #   run: |
+      #     curl -o ${{ github.workspace }}\%PYTHON_SETUP% https://www.python.org/ftp/python/%PYTHON_VERSION%/%PYTHON_SETUP%
+      #     ${{ github.workspace }}\%PYTHON_SETUP% /quiet TargetDir=%PYTHON_PATH%
 
       - name: Install Pip Requirements
         run: |
