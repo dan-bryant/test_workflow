@@ -213,9 +213,13 @@ jobs:
           echo workflowFile: %GH_WORKFLOW_FILE%>> README.txt
           echo batFile: %BAT_FILE%>> README.txt
           for /d %%p in (*) do (
-            xcopy %ARTIFACT_PATH%\%%p\%TRGT%_%CHAIN%\%ARCH%\*.efi %VOLUME%\EFI\Tools\  /D /Y
+            if exist %ARTIFACT_PATH%\%%p\%TRGT%_%CHAIN%\%ARCH%\*.efi (
+              xcopy %ARTIFACT_PATH%\%%p\%TRGT%_%CHAIN%\%ARCH%\*.efi %VOLUME%\EFI\Boot\  /D /Y
+            )
           )
-          copy %VOLUME%\EFI\Tools\Shell.efi %VOLUME%\EFI\Boot\bootx64.efi
+          if exist %VOLUME%\EFI\Tools\Shell.efi (
+            copy %VOLUME%\EFI\Tools\Shell.efi %VOLUME%\EFI\Boot\bootx64.efi
+          )
 
       # filename: .github/workflows/bld_cmd_ci_vs22.yml
       - name: Upload Artifact
