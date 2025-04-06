@@ -83,7 +83,7 @@ jobs:
       - name: Install Pip Requirements
         run: |
           %PYTHON_COMMAND% -m pip install --upgrade pip
-          %PYTHON_COMMAND% -m pip install -r "%EDK2_PATH%\pip-requirements.txt"
+          %PYTHON_COMMAND% -m pip install -y PyYAML
 
       - name: Extract artifact
         run: |
