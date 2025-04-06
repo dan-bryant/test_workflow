@@ -10,7 +10,7 @@ on:
         required: false
         default: "false"
       build:
-        description: "Pkg ( EmulatorPkg | OvmfPkg | Edk2 | All )"
+        description: "Pkg ( ie. EmulatorPkg, OvmfPkg, Edk2, All )"
         required: false
         default: "EmulatorPkg"
       vs_year:
@@ -168,28 +168,28 @@ jobs:
           set VOLUME=%ARTIFACT_PATH%\Emulator%ARCH%\%TRGT%_%CHAIN%\%ARCH%\Host
           pushd "%EDK2_PATH%\Build"
           echo "%CD%"
-          xcopy %REPO_PATH%\.github\workflows\*.yml "%ARTIFACT_PATH%" 
+          xcopy %REPO_PATH%\.github\workflows\*.yml "%ARTIFACT_PATH%\" 
           for /d %%p in (. *) do (
             if exist %EDK2_PATH%\Build\%%p\vmInfo* (
-              xcopy %EDK2_PATH%\Build\%%p\vmInfo* "%ARTIFACT_PATH%\%%p" /D /Y || echo ERROR: %EDK2_PATH%\Build\%%p\vmInfo*
+              xcopy %EDK2_PATH%\Build\%%p\vmInfo* "%ARTIFACT_PATH%\%%p\" /D /Y || echo ERROR: %EDK2_PATH%\Build\%%p\vmInfo*
             )
             if exist %EDK2_PATH%\Build\%%p\BUILDLOG*.txt (
-              xcopy %EDK2_PATH%\Build\%%p\BUILDLOG*.txt "%ARTIFACT_PATH%\%%p" /D /Y || echo ERROR: %EDK2_PATH%\Build\%%p\BUILDLOG*.txt
+              xcopy %EDK2_PATH%\Build\%%p\BUILDLOG*.txt "%ARTIFACT_PATH%\%%p\" /D /Y || echo ERROR: %EDK2_PATH%\Build\%%p\BUILDLOG*.txt
             )
             if exist %EDK2_PATH%\Build\%%p\*LOG.txt (
-              xcopy %EDK2_PATH%\Build\%%p\*LOG.txt "%ARTIFACT_PATH%\%%p" /D /Y || echo ERROR: %EDK2_PATH%\Build\%%p\*LOG.txt
+              xcopy %EDK2_PATH%\Build\%%p\*LOG.txt "%ARTIFACT_PATH%\%%p\" /D /Y || echo ERROR: %EDK2_PATH%\Build\%%p\*LOG.txt
             )
             if exist %EDK2_PATH%\Build\%%p\All\%TRGT%_%CHAIN%\%ARCH%\*.efi (
-              xcopy %EDK2_PATH%\Build\%%p\All\%TRGT%_%CHAIN%\%ARCH%\*.efi "%ARTIFACT_PATH%\%%p\%TRGT%_%CHAIN%\%ARCH%" /D /Y || echo ERROR: %EDK2_PATH%\Build\%%p\All\%TRGT%_%CHAIN%\%ARCH%\*.efi
+              xcopy %EDK2_PATH%\Build\%%p\All\%TRGT%_%CHAIN%\%ARCH%\*.efi "%ARTIFACT_PATH%\%%p\%TRGT%_%CHAIN%\%ARCH%\" /D /Y || echo ERROR: %EDK2_PATH%\Build\%%p\All\%TRGT%_%CHAIN%\%ARCH%\*.efi
             )
             if exist %EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\%ARCH%\*.efi (
-              xcopy %EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\%ARCH%\*.efi "%ARTIFACT_PATH%\%%p\%TRGT%_%CHAIN%\%ARCH%" /D /Y || echo ERROR: %EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\%ARCH%\*.efi
+              xcopy %EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\%ARCH%\*.efi "%ARTIFACT_PATH%\%%p\%TRGT%_%CHAIN%\%ARCH%\" /D /Y || echo ERROR: %EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\%ARCH%\*.efi
             )
             if exist %EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\%ARCH%\%EMU_HOST%* (
-              xcopy %EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\%ARCH%\%EMU_HOST%* "%VOLUME%" /D /Y || echo ERROR: %EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\%ARCH%\%EMU_HOST%*
+              xcopy %EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\%ARCH%\%EMU_HOST%* "%VOLUME%\" /D /Y || echo ERROR: %EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\%ARCH%\%EMU_HOST%*
             )
             if exist %EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\FV\* (
-              xcopy %EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\FV\* "%ARTIFACT_PATH%\%%p\%TRGT%_%CHAIN%\FV" /D /Y || echo ERROR: %EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\FV\*
+              xcopy %EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\FV\* "%ARTIFACT_PATH%\%%p\%TRGT%_%CHAIN%\FV\" /D /Y || echo ERROR: %EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\FV\*
             )
           )
 
@@ -213,7 +213,7 @@ jobs:
           echo workflowFile: %GH_WORKFLOW_FILE%>> README.txt
           echo batFile: %BAT_FILE%>> README.txt
           for /d %%p in (*) do (
-            xcopy %ARTIFACT_PATH%\%%p\%TRGT%_%CHAIN%\%ARCH%\*.efi %VOLUME%\EFI\Tools  /D /Y
+            xcopy %ARTIFACT_PATH%\%%p\%TRGT%_%CHAIN%\%ARCH%\*.efi %VOLUME%\EFI\Tools\  /D /Y
           )
           copy %VOLUME%\EFI\Tools\Shell.efi %VOLUME%\EFI\Boot\bootx64.efi
 
