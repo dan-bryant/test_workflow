@@ -94,33 +94,41 @@ jobs:
           echo %cd%
           dir %cd%        
 
-      # - name: Build UEFI Volume
-      #   run: |
-      #     set VOLUME=%ARTIFACT_PATH%\Emulator%ARCH%\%TRGT%_%CHAIN%\%ARCH%\%EMU_HOST%
-      #     pushd %ARTIFACT_PATH%
-      #     echo %GH_HEAD_SHA% > vmInfo%CHAIN%-%ARCH%-%TRGT%-Py%PYTHON_VERSION%.txt
-      #     dir /s /b /a:-d > repoFileListing.txt
-      #     dir /s /b /a:d > repoDirListing.txt
-      #     findstr /m /c:"%GH_WORKFLOW_NAME%" %REPO_PATH%\.github\workflows\*.yml > repoWorkflowFile.txt
-      #     for /f "delims=;" %%p in (repoWorkflowFile.txt) do (
-      #       set GH_WORKFLOW_FILE=%%~pnxp
-      #     )
-      #     for %%p in (%VOLUME%) do (
-      #       echo efiVolume: %%~pnxp>> README.txt
-      #     )
-      #     set BAT_FILE=build%CHAIN%-%ARCH%-%TRGT%-Py%PYTHON_VERSION%.bat
-      #     echo %PYTHON_COMMAND% %REPO_PATH%\%BUILD_BAT% D:%GH_WORKFLOW_FILE% D:%BAT_FILE% > %BAT_FILE%.bat
-      #     call %BAT_FILE%.bat
-      #     echo gitTag: %GH_HEAD_SHA%>> README.txt
-      #     echo workflowFile: %GH_WORKFLOW_FILE%>> README.txt
-      #     echo batFile: %BAT_FILE%>> README.txt
-      #     mkdir %VOLUME%\EFI\Boot
-      #     mkdir %VOLUME%\EFI\Tools
-      #     for /d %%p in (*) do (
-      #       robocopy "%ARTIFACT_PATH%\%%p\%TRGT%_%CHAIN%\%ARCH%" "%VOLUME%\EFI\Tools" *.efi /XO
-      #     )
-      #     copy %VOLUME%\EFI\Tools\Shell.efi %VOLUME%\EFI\Boot\bootx64.efi
-      #     move %VOLUME%\..\%EMU_HOST%* %VOLUME%
+      - name: Build UEFI Volume
+        run: |
+          set VOLUME=%ARTIFACT_PATH%\Emulator%ARCH%\%TRGT%_%CHAIN%\%ARCH%\%EMU_HOST%
+          pushd %ARTIFACT_PATH%
+          echo %GH_HEAD_SHA% > vmInfo%CHAIN%-%ARCH%-%TRGT%-Py%PYTHON_VERSION%.txt
+          dir /s /b /a:-d > repoFileListing.txt
+          dir /s /b /a:d > repoDirListing.txt
+          findstr /m /c:"%GH_WORKFLOW_NAME%" %REPO_PATH%\.github\workflows\*.yml > repoWorkflowFile.txt
+          for /f "delims=;" %%p in (repoWorkflowFile.txt) do (
+            set GH_WORKFLOW_FILE=%%~pnxp
+          )
+          for %%p in (%VOLUME%) do (
+            echo efiVolume: %%~pnxp>> README.txt
+          )
+          set BAT_FILE=build%CHAIN%-%ARCH%-%TRGT%-Py%PYTHON_VERSION%.bat
+          echo pwd: %CD%
+          echo PyCmd: %PYTHON_COMMAND%
+          echo bld_bat.py: %REPO_PATH%\%BUILD_BAT%
+          echo gh_yml: %GH_WORKFLOW_FILE%
+          dir %PYTHON_COMMAND%
+          dir %REPO_PATH%\%BUILD_BAT%
+          type %REPO_PATH%\%BUILD_BAT%
+          dir %GH_WORKFLOW_FILE%          
+          type %GH_WORKFLOW_FILE%
+          %PYTHON_COMMAND% %REPO_PATH%\%BUILD_BAT% D:%GH_WORKFLOW_FILE% D:%BAT_FILE%
+          echo gitTag: %GH_HEAD_SHA%>> README.txt
+          echo workflowFile: %GH_WORKFLOW_FILE%>> README.txt
+          echo batFile: %BAT_FILE%>> README.txt
+          mkdir %VOLUME%\EFI\Boot
+          mkdir %VOLUME%\EFI\Tools
+          for /d %%p in (*) do (
+            robocopy "%ARTIFACT_PATH%\%%p\%TRGT%_%CHAIN%\%ARCH%" "%VOLUME%\EFI\Tools" *.efi /XO
+          )
+          copy %VOLUME%\EFI\Tools\Shell.efi %VOLUME%\EFI\Boot\bootx64.efi
+          move %VOLUME%\..\%EMU_HOST%* %VOLUME%
 
       # filename: .github/workflows/bld_cmd_ci_vs22.yml
       - name: Upload Artifact
