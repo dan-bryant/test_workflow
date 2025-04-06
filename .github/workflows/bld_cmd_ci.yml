@@ -173,7 +173,8 @@ jobs:
         # Robocopy will likely throw an error on one of these, so ignore and continue
         continue-on-error: true
         run: |
-          pushd "%EDK2_PATH%"
+          pushd "%EDK2_PATH%\Build"
+          echo "%CD%"
           robocopy "%REPO_PATH%" "%ARTIFACT_PATH%" *.yml 
           for /d %%p in (. *) do (
             robocopy "%EDK2_PATH%\Build\%%p" "%ARTIFACT_PATH%\%%p" vmInfo*
