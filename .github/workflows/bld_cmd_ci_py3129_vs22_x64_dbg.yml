@@ -91,7 +91,7 @@ jobs:
       - name: Build Build_All
         # Compiler #2065: EmbeddedPkg\...\VirtualRealTimeClockLib.c(89): 'BUILD_EPOCH': undeclared
         continue-on-error: true
-        if: ${{ env.BUILD_ALL == 'true' }}
+        if: ${{ github.event.inputs.full == 'true' }}
         run: |
           pushd "%EDK2_PATH%"
           call edksetup.bat Reconfig %CHAIN%
