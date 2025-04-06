@@ -170,13 +170,27 @@ jobs:
           echo "%CD%"
           robocopy %REPO_PATH%\.github\workflows "%ARTIFACT_PATH%" *.yml
           for /d %%p in (. *) do (
-            robocopy "%EDK2_PATH%\Build\%%p" "%ARTIFACT_PATH%\%%p" vmInfo*
-            robocopy "%EDK2_PATH%\Build\%%p" "%ARTIFACT_PATH%\%%p" BUILDLOG*.txt
-            robocopy "%EDK2_PATH%\Build\%%p" "%ARTIFACT_PATH%\%%p" *LOG.txt
-            robocopy "%EDK2_PATH%\Build\%%p\All\%TRGT%_%CHAIN%\%ARCH%" "%ARTIFACT_PATH%\%%p\%TRGT%_%CHAIN%\%ARCH%" *.efi
-            robocopy "%EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\%ARCH%" "%ARTIFACT_PATH%\%%p\%TRGT%_%CHAIN%\%ARCH%" *.efi
-            robocopy "%EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\%ARCH%" "%ARTIFACT_PATH%\%%p\%TRGT%_%CHAIN%\%ARCH%" %EMU_HOST%*
-            robocopy "%EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\FV" "%ARTIFACT_PATH%\%%p\%TRGT%_%CHAIN%\FV" *
+            if exist %EDK2_PATH%\Build\%%p\vmInfo* (
+              robocopy "%EDK2_PATH%\Build\%%p" "%ARTIFACT_PATH%\%%p" vmInfo*
+            )
+            if exist %EDK2_PATH%\Build\%%p\BUILDLOG*.txt (
+              robocopy "%EDK2_PATH%\Build\%%p" "%ARTIFACT_PATH%\%%p" BUILDLOG*.txt
+            )
+            if exist %EDK2_PATH%\Build\%%p\*LOG.txt (
+              robocopy "%EDK2_PATH%\Build\%%p" "%ARTIFACT_PATH%\%%p" *LOG.txt
+            )
+            if exist %EDK2_PATH%\Build\%%p\All\%TRGT%_%CHAIN%\%ARCH%\*.efi (
+              robocopy "%EDK2_PATH%\Build\%%p\All\%TRGT%_%CHAIN%\%ARCH%" "%ARTIFACT_PATH%\%%p\%TRGT%_%CHAIN%\%ARCH%" *.efi
+            )
+            if exist %EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\%ARCH%\*.efi (
+              robocopy "%EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\%ARCH%" "%ARTIFACT_PATH%\%%p\%TRGT%_%CHAIN%\%ARCH%" *.efi
+            )
+            if exist %EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\%ARCH%\%EMU_HOST%* (
+              robocopy "%EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\%ARCH%" "%ARTIFACT_PATH%\%%p\%TRGT%_%CHAIN%\%ARCH%" %EMU_HOST%*
+            )
+            if exist %EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\FV\* (
+              robocopy "%EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\FV" "%ARTIFACT_PATH%\%%p\%TRGT%_%CHAIN%\FV" *
+            )
           )
 
       - name: Build UEFI Volume
@@ -204,9 +218,9 @@ jobs:
           echo debug1
           copy %VOLUME%\EFI\Tools\Shell.efi %VOLUME%\EFI\Boot\bootx64.efi
           echo debug2
-          if exist %VOLUME%\..\%EMU_HOST%* ( 
+          if exist %VOLUME%\..\%EMU_HOST%* (
             echo debug3
-            move %VOLUME%\..\%EMU_HOST%* %VOLUME% 
+            move %VOLUME%\..\%EMU_HOST%* %VOLUME%
           )
           echo debug4
 
