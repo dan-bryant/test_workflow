@@ -1,6 +1,6 @@
 # filename: .github/workflows/bld_cmd_ci.yml
-name: Build with CMD and CI on VS
-run-name: bld-cmd-ci-vs${{ github.event.inputs.vs_year }}-${{ github.event.inputs.architecture }}-${{ github.event.inputs.target }}-Py_${{ github.event.inputs.python_version }}-Hack_${{ github.event.inputs.hack }}
+name: Debug CI
+run-name: debug${{ github.event.inputs.vs_year }}-${{ github.event.inputs.architecture }}-${{ github.event.inputs.target }}-Py_${{ github.event.inputs.python_version }}-Hack_${{ github.event.inputs.hack }}
 
 on:
   workflow_dispatch:  # Allows the workflow to be triggered manually
