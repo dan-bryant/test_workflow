@@ -213,7 +213,7 @@ jobs:
           echo workflowFile: %GH_WORKFLOW_FILE%>> README.txt
           echo batFile: %BAT_FILE%>> README.txt
           for /d %%p in (*) do (
-            robocopy "%ARTIFACT_PATH%\%%p\%TRGT%_%CHAIN%\%ARCH%" "%VOLUME%\EFI\Tools" *.efi /XO
+            xcopy %ARTIFACT_PATH%\%%p\%TRGT%_%CHAIN%\%ARCH%\*.efi %VOLUME%\EFI\Tools  /D /Y
           )
           copy %VOLUME%\EFI\Tools\Shell.efi %VOLUME%\EFI\Boot\bootx64.efi
 
