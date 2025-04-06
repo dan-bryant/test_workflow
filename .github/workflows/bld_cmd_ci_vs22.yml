@@ -1,7 +1,6 @@
 # filename: .github/workflows/bld_cmd_ci_vs22.yml
 name: Build Command CI VS22
-run-name: Bld-cmd-ci-vs22-${{ github.event.inputs.architecture }}-${{ github.event.inputs.target }}-Py${{ github.event.inputs.python_version }}
-
+run-name: Bld-cmd-ci-vs22-${{ github.event.inputs.architecture }}-${{ github.event.inputs.target }}-Py_${{ github.event.inputs.python_version }}-Hack_${{ github.event.inputs.hack }}
 
 on:
   workflow_dispatch:  # Allows the workflow to be triggered manually
@@ -142,11 +141,15 @@ jobs:
           set > vmInfoEnvVars.txt
           vswhere -format json > vmInfoVswhere.json
           jq -r ".[0].installationPath" vmInfoVswhere.json > vmInfoVsInstallPath.txt
-          where vswhere
-
-# for /f "delims=;" %%p in (vmInfoVsInstallPath.txt) do (
-#   echo.| vs_installer.exe export --quiet --installPath "%%p" --config vmInfoVsConfig.json
-# )
+          jq -r ".[0].properties.setupEngineFilePath" vmInfoVswhere.json > vmInfoVsSetupTool.txt
+          for /f "delims=;" %p in (vmInfoVsSetupTool.txt) do (
+            set VS_SETUP_PATH=%%~dpp
+          )
+          echo %VS_SETUP_PATH%\vs_installer.exe
+          dir %VS_SETUP_PATH%\vs_installer.exe
+          for /f "delims=;" %%p in (vmInfoVsInstallPath.txt) do (
+            echo.| %VS_SETUP_PATH%\vs_installer.exe export --quiet --installPath "%%p" --config vmInfoVsConfig.json
+          )
 
       - name: Package Build Outputs
         # Robocopy will likely throw an error on one of these, so ignore and continue
