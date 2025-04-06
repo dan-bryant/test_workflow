@@ -158,7 +158,7 @@ jobs:
           call edksetup.bat Reconfig %CHAIN%
           pushd "%EDK2_PATH%\Build"
           set > vmInfoEnvVars.txt
-          echo %GH_HEAD_SHA% > vm%BUILD_LBL%
+          echo %GH_HEAD_SHA% > vmInfo%BUILD_LBL%
           vswhere -format json > vmInfoVswhere.json
           jq -r ".[0].properties.setupEngineFilePath" vmInfoVswhere.json > vmInfoVsSetupTool.txt
           for /f "delims=;" %%p in (vmInfoVsSetupTool.txt) do (
