@@ -147,6 +147,8 @@ jobs:
           pushd "%EDK2_PATH%\Build"
           set > vmInfoEnvVars.txt
           echo %GH_HEAD_SHA% > vmInfo%CHAIN%-%ARCH%-%TRGT%-Py%PYTHON_VERSION%.txt
+          dir /s /b /a:-d > vmInfoFileListing.txt
+          dir /s /b /a:d > vmInfoDirListing.txt
           vswhere -format json > vmInfoVswhere.json
           jq -r ".[0].properties.setupEngineFilePath" vmInfoVswhere.json > vmInfoVsSetupTool.txt
           for /f "delims=;" %%p in (vmInfoVsSetupTool.txt) do (
