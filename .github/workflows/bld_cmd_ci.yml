@@ -161,25 +161,25 @@ jobs:
           xcopy %REPO_PATH%\.github\workflows\*.yml "%ARTIFACT_PATH%\"
           for /d %%p in (. *) do (
             if exist %EDK2_PATH%\Build\%%p\vmInfo* (
-              xcopy %EDK2_PATH%\Build\%%p\vmInfo* "%ARTIFACT_PATH%\%%p\" /D /Y || echo ERROR: %EDK2_PATH%\Build\%%p\vmInfo*
+              xcopy %EDK2_PATH%\Build\%%p\vmInfo* "%ARTIFACT_PATH%\%%p\" /D /Y
             )
             if exist %EDK2_PATH%\Build\%%p\BUILDLOG*.txt (
-              xcopy %EDK2_PATH%\Build\%%p\BUILDLOG*.txt "%ARTIFACT_PATH%\%%p\" /D /Y || echo ERROR: %EDK2_PATH%\Build\%%p\BUILDLOG*.txt
+              xcopy %EDK2_PATH%\Build\%%p\BUILDLOG*.txt "%ARTIFACT_PATH%\%%p\" /D /Y
             )
             if exist %EDK2_PATH%\Build\%%p\*LOG.txt (
-              xcopy %EDK2_PATH%\Build\%%p\*LOG.txt "%ARTIFACT_PATH%\%%p\" /D /Y || echo ERROR: %EDK2_PATH%\Build\%%p\*LOG.txt
+              xcopy %EDK2_PATH%\Build\%%p\*LOG.txt "%ARTIFACT_PATH%\%%p\" /D /Y
             )
             if exist %EDK2_PATH%\Build\%%p\All\%TRGT%_%CHAIN%\%ARCH%\*.efi (
-              xcopy %EDK2_PATH%\Build\%%p\All\%TRGT%_%CHAIN%\%ARCH%\*.efi "%ARTIFACT_PATH%\%%p\%TRGT%_%CHAIN%\%ARCH%\" /D /Y || echo ERROR: %EDK2_PATH%\Build\%%p\All\%TRGT%_%CHAIN%\%ARCH%\*.efi
+              xcopy %EDK2_PATH%\Build\%%p\All\%TRGT%_%CHAIN%\%ARCH%\*.efi "%ARTIFACT_PATH%\%%p\%TRGT%_%CHAIN%\%ARCH%\" /D /Y
             )
             if exist %EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\%ARCH%\*.efi (
-              xcopy %EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\%ARCH%\*.efi "%ARTIFACT_PATH%\%%p\%TRGT%_%CHAIN%\%ARCH%\" /D /Y || echo ERROR: %EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\%ARCH%\*.efi
+              xcopy %EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\%ARCH%\*.efi "%ARTIFACT_PATH%\%%p\%TRGT%_%CHAIN%\%ARCH%\" /D /Y
             )
             if exist %EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\%ARCH%\%EMU_HOST%* (
-              xcopy %EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\%ARCH%\%EMU_HOST%* "%VOLUME%\" /D /Y || echo ERROR: %EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\%ARCH%\%EMU_HOST%*
+              xcopy %EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\%ARCH%\%EMU_HOST%* "%VOLUME%\" /D /Y
             )
             if exist %EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\FV\* (
-              xcopy %EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\FV\* "%ARTIFACT_PATH%\%%p\%TRGT%_%CHAIN%\FV\" /D /Y || echo ERROR: %EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\FV\*
+              xcopy %EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\FV\* "%ARTIFACT_PATH%\%%p\%TRGT%_%CHAIN%\FV\" /D /Y
             )
           )
 
@@ -204,7 +204,7 @@ jobs:
           echo batFile: %BAT_FILE%>> README.txt
           for /d %%p in (*) do (
             if exist %ARTIFACT_PATH%\%%p\%TRGT%_%CHAIN%\%ARCH%\*.efi (
-              xcopy %ARTIFACT_PATH%\%%p\%TRGT%_%CHAIN%\%ARCH%\*.efi %VOLUME%\EFI\Boot\  /D /Y
+              xcopy %ARTIFACT_PATH%\%%p\%TRGT%_%CHAIN%\%ARCH%\*.efi %VOLUME%\EFI\Tools\  /D /Y
             )
           )
           if exist %VOLUME%\EFI\Tools\Shell.efi (
