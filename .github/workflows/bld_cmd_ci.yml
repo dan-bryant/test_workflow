@@ -147,6 +147,8 @@ jobs:
           set VOLUME=%ARTIFACT_PATH%\Emulator%ARCH%\%TRGT%_%CHAIN%\%ARCH%\%EMU_HOST%
           pushd "%EDK2_PATH%"
           call edksetup.bat Reconfig %CHAIN%
+          mkdir %VOLUME%\EFI\Boot
+          mkdir %VOLUME%\EFI\Tools
           pushd "%VOLUME%"
           set > vmInfoEnvVars.txt
           vswhere -format json > vmInfoVswhere.json
@@ -196,8 +198,6 @@ jobs:
           echo gitTag: %GH_HEAD_SHA%>> README.txt
           echo workflowFile: %GH_WORKFLOW_FILE%>> README.txt
           echo batFile: %BAT_FILE%>> README.txt
-          mkdir %VOLUME%\EFI\Boot
-          mkdir %VOLUME%\EFI\Tools
           for /d %%p in (*) do (
             robocopy "%ARTIFACT_PATH%\%%p\%TRGT%_%CHAIN%\%ARCH%" "%VOLUME%\EFI\Tools" *.efi /XO
           )
