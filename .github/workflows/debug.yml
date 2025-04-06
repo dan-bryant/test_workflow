@@ -83,7 +83,7 @@ jobs:
       - name: Install Pip Requirements
         run: |
           %PYTHON_COMMAND% -m pip install --upgrade pip
-          %PYTHON_COMMAND% -m pip install -y PyYAML
+          %PYTHON_COMMAND% -m pip install PyYAML
 
       - name: Extract artifact
         run: |
