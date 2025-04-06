@@ -164,6 +164,7 @@ jobs:
         # Robocopy will likely throw an error on one of these, so ignore and continue
         continue-on-error: true
         run: |
+          pushd "%EDK2_PATH%"
           for /d %%p in (. *) do (
             robocopy "%EDK2_PATH%\Build\%%p" "%ARTIFACT_PATH%\%%p" vmInfo*
             robocopy "%EDK2_PATH%\Build\%%p" "%ARTIFACT_PATH%\%%p" BUILDLOG*.txt
@@ -185,3 +186,4 @@ jobs:
             -${{ github.event.inputs.target }}
             -Py${{ github.event.inputs.python_version }}
           path: ${{ env.ARTIFACT_PATH }}\**\*
+
