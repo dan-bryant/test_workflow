@@ -1,6 +1,6 @@
 # filename: .github/workflows/bld_cmd_ci.yml
 name: Build with CMD and CI on VS
-run-name: >-
+run-name: >
   bld-cmd-ci
   -vs${{ github.event.inputs.vs_year }}
   -${{ github.event.inputs.architecture }}
@@ -180,12 +180,30 @@ jobs:
             robocopy "%EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\FV" "%ARTIFACT_PATH%\%%p\%TRGT%_%CHAIN%\FV" *
           )
 
+      - name: Build UEFI Volume
+        # Robocopy will likely throw an error on one of these, so ignore and continue
+        continue-on-error: true
+        run: |
+          C:\Users\BryantDa\Downloads\build-cmd-ci-vs22 -X64 -DEBUG -Py_3.12.9 -Hack_false.zip\EmulatorX64\DEBUG_VS2022\X64
+          pushd "%EDK2_PATH%\Build"
+          echo "%CD%"
+          robocopy "%REPO_PATH%" "%ARTIFACT_PATH%" *.yml
+          for /d %%p in (. *) do (
+            robocopy "%EDK2_PATH%\Build\%%p" "%ARTIFACT_PATH%\%%p" vmInfo*
+            robocopy "%EDK2_PATH%\Build\%%p" "%ARTIFACT_PATH%\%%p" BUILDLOG*.txt
+            robocopy "%EDK2_PATH%\Build\%%p" "%ARTIFACT_PATH%\%%p" *LOG.txt
+            robocopy "%EDK2_PATH%\Build\%%p\All\%TRGT%_%CHAIN%\%ARCH%" "%ARTIFACT_PATH%\%%p\All\%TRGT%_%CHAIN%\%ARCH%" *.efi
+            robocopy "%EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\%ARCH%" "%ARTIFACT_PATH%\%%p\%TRGT%_%CHAIN%\%ARCH%" *.efi
+            robocopy "%EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\%ARCH%" "%ARTIFACT_PATH%\%%p\%TRGT%_%CHAIN%\%ARCH%" %EMU_HOST%*
+            robocopy "%EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\FV" "%ARTIFACT_PATH%\%%p\%TRGT%_%CHAIN%\FV" *
+          )
+
       # filename: .github/workflows/bld_cmd_ci_vs22.yml
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: >-
-            Bld-cmd-ci
+          name: >
+            bld-cmd-ci
             -vs${{ github.event.inputs.vs_year }}
             -${{ github.event.inputs.architecture }}
             -${{ github.event.inputs.target }}
