@@ -144,7 +144,7 @@ jobs:
 
       - name: Gather VS Environment Data
         run: |
-          set VOLUME=%ARTIFACT_PATH%\Emulator%ARCH%\%TRGT%_%CHAIN%\%ARCH%\%EMU_HOST%
+          set VOLUME=%ARTIFACT_PATH%\Emulator%ARCH%\%TRGT%_%CHAIN%\%ARCH%\Host
           pushd "%EDK2_PATH%"
           call edksetup.bat Reconfig %CHAIN%
           mkdir %VOLUME%\EFI\Boot
@@ -165,7 +165,7 @@ jobs:
         # Robocopy will likely throw an error on one of these, so ignore and continue
         continue-on-error: true
         run: |
-          set VOLUME=%ARTIFACT_PATH%\Emulator%ARCH%\%TRGT%_%CHAIN%\%ARCH%\%EMU_HOST%
+          set VOLUME=%ARTIFACT_PATH%\Emulator%ARCH%\%TRGT%_%CHAIN%\%ARCH%\Host
           pushd "%EDK2_PATH%\Build"
           echo "%CD%"
           robocopy %REPO_PATH%\.github\workflows "%ARTIFACT_PATH%" *.yml
@@ -185,8 +185,8 @@ jobs:
             if exist %EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\%ARCH%\*.efi (
               robocopy "%EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\%ARCH%" "%ARTIFACT_PATH%\%%p\%TRGT%_%CHAIN%\%ARCH%" *.efi || echo ERROR: %EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\%ARCH%\*.efi
             )
-            if exist %EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\%ARCH%\%EMU_HOST%.* (
-              robocopy "%EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\%ARCH%" "%ARTIFACT_PATH%\%%p\%TRGT%_%CHAIN%\%ARCH%" %EMU_HOST%.* || echo ERROR: %EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\%ARCH%\%EMU_HOST%.*
+            if exist %EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\%ARCH%\%EMU_HOST%* (
+              robocopy "%EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\%ARCH%" "%VOLUME%" %EMU_HOST%* || echo ERROR: %EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\%ARCH%\%EMU_HOST%*
             )
             if exist %EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\FV\* (
               robocopy "%EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\FV" "%ARTIFACT_PATH%\%%p\%TRGT%_%CHAIN%\FV" * || echo ERROR: %EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\FV\*
@@ -195,7 +195,7 @@ jobs:
 
       - name: Build UEFI Volume
         run: |
-          set VOLUME=%ARTIFACT_PATH%\Emulator%ARCH%\%TRGT%_%CHAIN%\%ARCH%\%EMU_HOST%
+          set VOLUME=%ARTIFACT_PATH%\Emulator%ARCH%\%TRGT%_%CHAIN%\%ARCH%\Host
           pushd %ARTIFACT_PATH%
           echo %GH_HEAD_SHA% > vmInfo%CHAIN%-%ARCH%-%TRGT%-Py%PYTHON_VERSION%.txt
           dir /s /b /a:-d > repoFileListing.txt
@@ -215,14 +215,7 @@ jobs:
           for /d %%p in (*) do (
             robocopy "%ARTIFACT_PATH%\%%p\%TRGT%_%CHAIN%\%ARCH%" "%VOLUME%\EFI\Tools" *.efi /XO
           )
-          echo debug1
           copy %VOLUME%\EFI\Tools\Shell.efi %VOLUME%\EFI\Boot\bootx64.efi
-          echo debug2
-          if exist %VOLUME%\..\%EMU_HOST%.* (
-            echo debug3
-            move %VOLUME%\..\%EMU_HOST%.* %VOLUME%
-          )
-          echo debug4
 
       # filename: .github/workflows/bld_cmd_ci_vs22.yml
       - name: Upload Artifact
