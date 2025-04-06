@@ -132,6 +132,7 @@ jobs:
           %STUART%_build -c OvmfPkg\PlatformCI\PlatformBuild.py -a %ARCH% TOOL_CHAIN_TAG=%CHAIN% TARGET=%TRGT%
 
       - name: Gather VS Environment Data
+        continue-on-error: true
         run: |
           pushd "%EDK2_PATH%"
           call edksetup.bat Reconfig %CHAIN%
@@ -139,9 +140,11 @@ jobs:
           set > vmInfoEnvVars.txt
           vswhere -format json > vmInfoVswhere.json
           jq -r ".[0].installationPath" vmInfoVswhere.json > vmInfoVsInstallPath.txt
-          for /f "delims=;" %%p in (vmInfoVsInstallPath.txt) do (
-            echo.| vs_installer.exe export --quiet --installPath "%%p" --config vmInfoVsConfig.json
-          )
+          where vswhere
+
+# for /f "delims=;" %%p in (vmInfoVsInstallPath.txt) do (
+#   echo.| vs_installer.exe export --quiet --installPath "%%p" --config vmInfoVsConfig.json
+# )
 
       - name: Package Build Outputs
         # Robocopy will likely throw an error on one of these, so ignore and continue
@@ -158,9 +161,10 @@ jobs:
             robocopy %CD%\%%p\%DEBUG%_%VS2022%\FV\* "%ARTIFACT_PATH%\%%p\%DEBUG%_%VS2022%\FV"
           )
 
+      # filename: .github/workflows/bld_cmd_ci_vs22.yml
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: build-artifact
+          name: build-cmd-ci-vs22-${{ github.event.inputs.architecture }}-${{ github.event.inputs.target }}-Py${{ github.event.inputs.python_version }}
           path: ${{ env.ARTIFACT_PATH }}\**\*
 
