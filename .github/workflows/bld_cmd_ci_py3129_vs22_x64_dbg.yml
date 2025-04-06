@@ -2,7 +2,28 @@
 name: Bld cmd,ci,py3129,vs22,x64,dbg
 
 on:
-  workflow_dispatch: # Allows the workflow to be triggered manually
+  workflow_dispatch:  # Allows the workflow to be triggered manually
+    inputs:
+      hack:
+        description: "Enable HACK mode"
+        required: false
+        default: "false"
+      full:
+        description: "Build the most targets"
+        required: false
+        default: "false"
+      target:
+        description: "Specify the build target (DEBUG | RELEASE)"
+        required: false
+        default: "RELEASE"  
+      architecture:
+        description: "Specify the build architecture (X64 | IA32 | AARM64)"
+        required: false
+        default: "X64"  
+      python_version:
+        description: "Specify the Python version to use"
+        required: false
+        default: "3.12.9"  
 
 jobs:
   build:
@@ -14,19 +35,19 @@ jobs:
       IASL_PREFIX: C:\ProgramData\chocolatey\bin\
       CLANG_BIN: C:\Program Files\LLVM\bin\
       NASM_PREFIX: C:\Program Files\NASM\
-      PYTHON_COMMAND: D:\Python312\python.exe
-      PYTHON_PATH: D:\Python312
-      PYTHON_VERSION: 3.12.9
-      PYTHON_SETUP: python-3.12.9-amd64.exe
-      STUART: D:\Python312\Scripts\stuart
+      PYTHON_COMMAND: D:\Python${{ github.event.inputs.python_version }}\python.exe
+      PYTHON_PATH: D:\Python${{ github.event.inputs.python_version }}
+      PYTHON_VERSION: ${{ github.event.inputs.python_version }}
+      PYTHON_SETUP: python-${{ github.event.inputs.python_version }}-amd64.exe
+      STUART: D:\Python${{ github.event.inputs.python_version }}\Scripts\stuart
       GH_REPO_URL: ${{ github.server_url }}/${{ github.repository }}
       REPO_PATH: D:\r
       EDK2_PATH: D:\r\Edk2
       ARTIFACT_PATH: D:\artifact
       EMU_HOST: WinHost
       CHAIN: VS2022
-      ARCH: X64
-      TRGT: DEBUG
+      ARCH: ${{ github.event.inputs.architecture }}
+      TRGT: ${{ github.event.inputs.target }}
     defaults:
       run:
         shell: cmd
@@ -42,25 +63,6 @@ jobs:
       #   with:
       #     submodules: recursive     # Initialize and update submodules
       #     long-paths: true          # Enable long path support
-
-      # - name: Install NASM
-      #   run: choco install nasm -y
-
-      # - name: Install IASL
-      #   run: choco install iasl -y
-
-      # - name: Find IASL
-      #   run: dir /s/b "%IASL_PREFIX%\iasl.exe"
-
-      # - name: Find CLANG
-      #   run: dir /s/b "%CLANG_BIN%\clang.exe"
-
-      # - name: Find NASM
-      #   run: dir /s/b "%NASM_PREFIX%\nasm.exe"
-
-      # - name: Break
-      #   run: |
-      #     dir this_file_does_not_exist.txt
 
       - name: Install Python 3.12.9, NASM, IASL
         run: |
@@ -86,13 +88,14 @@ jobs:
           %STUART%_setup -c .pytool\CISettings.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
           %STUART%_update -c .pytool\CISettings.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
 
-      # - name: Build Build_All
-      #   # Compiler #2065: EmbeddedPkg\...\VirtualRealTimeClockLib.c(89): 'BUILD_EPOCH': undeclared
-      #   continue-on-error: true
-      #   run: |
-      #     pushd "%EDK2_PATH%"
-      #     call edksetup.bat Reconfig %CHAIN%
-      #     %STUART%_ci_build -c .pytool\CISettings.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
+      - name: Build Build_All
+        # Compiler #2065: EmbeddedPkg\...\VirtualRealTimeClockLib.c(89): 'BUILD_EPOCH': undeclared
+        continue-on-error: true
+        if: ${{ env.BUILD_ALL == 'true' }}
+        run: |
+          pushd "%EDK2_PATH%"
+          call edksetup.bat Reconfig %CHAIN%
+          %STUART%_ci_build -c .pytool\CISettings.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
 
       - name: Setup and update EmulatorPkg
         run: |
