@@ -95,14 +95,6 @@ jobs:
           call edksetup.bat Reconfig %CHAIN%
           %PYTHON_COMMAND% BaseTools\Edk2ToolsBuild.py -t %CHAIN%
 
-      - name: Setup and update Edk2
-        if: ${{ github.event.inputs.build == 'All' || github.event.inputs.build == 'Edk2' }}
-        run: |
-          pushd "%EDK2_PATH%"
-          call edksetup.bat Reconfig %CHAIN%
-          %STUART%_setup -c .pytool\CISettings.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
-          %STUART%_update -c .pytool\CISettings.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
-
       - name: Build Edk2
         # Compiler #2065: EmbeddedPkg\...\VirtualRealTimeClockLib.c(89): 'BUILD_EPOCH': undeclared
         continue-on-error: true
@@ -110,37 +102,35 @@ jobs:
         run: |
           pushd "%EDK2_PATH%"
           call edksetup.bat Reconfig %CHAIN%
+          %STUART%_setup -c .pytool\CISettings.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
+          %STUART%_update -c .pytool\CISettings.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
           %STUART%_ci_build -c .pytool\CISettings.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
-
-      - name: Setup and update EmulatorPkg
-        if: ${{ github.event.inputs.build == 'All' || github.event.inputs.build == 'EmulatorPkg' }}
-        run: |
-          pushd "%EDK2_PATH%"
-          call edksetup.bat Reconfig %CHAIN%
-          %STUART%_setup -c EmulatorPkg\PlatformCI\PlatformBuild.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
-          %STUART%_update -c EmulatorPkg\PlatformCI\PlatformBuild.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
 
       - name: Build EmulatorPkg
         if: ${{ github.event.inputs.build == 'All' || github.event.inputs.build == 'EmulatorPkg' }}
         run: |
           pushd "%EDK2_PATH%"
           call edksetup.bat Reconfig %CHAIN%
+          %STUART%_setup -c EmulatorPkg\PlatformCI\PlatformBuild.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
+          %STUART%_update -c EmulatorPkg\PlatformCI\PlatformBuild.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
           %STUART%_build -c EmulatorPkg\PlatformCI\PlatformBuild.py -a %ARCH% TOOL_CHAIN_TAG=%CHAIN% TARGET=%TRGT%
-
-      - name: Setup and update OvmfPkg
-        if: ${{ github.event.inputs.build == 'All' || github.event.inputs.build == 'OvmfPkg' }}
-        run: |
-          pushd "%EDK2_PATH%"
-          call edksetup.bat Reconfig %CHAIN%
-          %STUART%_setup -c OvmfPkg\PlatformCI\PlatformBuild.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
-          %STUART%_update -c OvmfPkg\PlatformCI\PlatformBuild.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
 
       - name: Build OvmfPkg
         if: ${{ github.event.inputs.build == 'All' || github.event.inputs.build == 'OvmfPkg' }}
         run: |
           pushd "%EDK2_PATH%"
           call edksetup.bat Reconfig %CHAIN%
+          %STUART%_setup -c OvmfPkg\PlatformCI\PlatformBuild.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
+          %STUART%_update -c OvmfPkg\PlatformCI\PlatformBuild.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
           %STUART%_build -c OvmfPkg\PlatformCI\PlatformBuild.py -a %ARCH% TOOL_CHAIN_TAG=%CHAIN% TARGET=%TRGT%
+
+      - name: Build Pkg ${{ github.event.inputs.build }}
+        if: ${{ github.event.inputs.build != 'All' && github.event.inputs.build != 'OvmfPkg' && github.event.inputs.build != 'EmulatorPkg' }}
+        run: |
+          pushd "%EDK2_PATH%"
+          %STUART%_setup -c .pytool\CISettings.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
+          %STUART%_update -c .pytool\CISettings.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
+          %STUART%_ci_build -c .pytool\CISettings.py -p ${{ github.event.inputs.build }} -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
 
       - name: Gather VS Environment Data
         run: |
