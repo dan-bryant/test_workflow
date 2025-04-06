@@ -1,4 +1,5 @@
 import yaml
+import sys
 
 def extract_run_blocks_with_env(yaml_file, output_batch_file):
     # Open and parse the YAML file
@@ -32,7 +33,15 @@ def extract_run_blocks_with_env(yaml_file, output_batch_file):
     print(f"Batch file created: {output_batch_file}")
 
 
-# Example usage
-yaml_file = ".github/workflows/bld_cmd_ci_py3129_vs22_x64_dbg.yml"
-output_batch_file = "output.bat"
-extract_run_blocks_with_env(yaml_file, output_batch_file)
+if __name__ == "__main__":
+    # Ensure the correct number of arguments are provided
+    if len(sys.argv) != 3:
+        print("Usage: python mk_bat.py <yaml_file> <output_batch_file>")
+        sys.exit(1)
+
+    # Get command-line arguments
+    yaml_file = sys.argv[1]
+    output_batch_file = sys.argv[2]
+
+    # Call the function with the provided arguments
+    extract_run_blocks_with_env(yaml_file, output_batch_file)
