@@ -16,15 +16,15 @@ on:
       target:
         description: "Build target (DEBUG | RELEASE)"
         required: false
-        default: "RELEASE"  
+        default: "RELEASE"
       architecture:
         description: "Build architecture (X64 | IA32 | AARM64)"
         required: false
-        default: "X64"  
+        default: "X64"
       python_version:
         description: "Python version to use"
         required: false
-        default: "3.12.9"  
+        default: "3.12.9"
 
 jobs:
   build:
@@ -135,6 +135,7 @@ jobs:
       - name: Gather VS Environment Data
         continue-on-error: true
         run: |
+          mkdir /p "%EDK2_PATH%\Build\%%p
           pushd "%EDK2_PATH%"
           call edksetup.bat Reconfig %CHAIN%
           pushd "%CD%\Build"
