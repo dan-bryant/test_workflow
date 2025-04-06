@@ -137,7 +137,7 @@ jobs:
           set VOLUME=%ARTIFACT_PATH%\Emulator%ARCH%\%TRGT%_%CHAIN%\%ARCH%\Host
           pushd "%EDK2_PATH%"
           call edksetup.bat Reconfig %CHAIN%
-          pushd "%EDK2_PATH%\Build"
+          pushd %ARTIFACT_PATH%
           mkdir %VOLUME%\EFI\Boot
           mkdir %VOLUME%\EFI\Tools
           set > vmInfoEnvVars.txt
