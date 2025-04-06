@@ -56,8 +56,8 @@ jobs:
       ARTIFACT_PATH: D:\artifact
       EMU_HOST: WinHost
       CHAIN: VS20${{ github.event.inputs.vs_year }}
-      ARCH: ${{ github.event.inputs.architecture }}
-      TRGT: ${{ github.event.inputs.target }}
+      ARCH: ${{ toUpper(github.event.inputs.architecture) }}
+      TRGT: ${{ toUpper(github.event.inputs.target) }}
 
     defaults:
       run:
