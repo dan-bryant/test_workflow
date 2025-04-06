@@ -82,27 +82,31 @@ jobs:
       - name: Make VHDX
         shell: pwsh
         run: |
-          $EMU_OUT = "${env:ARTIFACT_PATH}\Emulator${env:ARCH}\${env:TRGT}_${env:CHAIN}\${env:ARCH}\Host"
           $OVM_OUT = "${env:ARTIFACT_PATH}\Ovmf${env:ARCH}\${env:TRGT}_${env:CHAIN}"
-          $VhdPath = "${OVM_OUT}\efi_disk.vhdx"
-          $DirectorySizeBytes = (Get-ChildItem -Path "${EMU_OUT}\EFI" -Recurse | Measure-Object -Property Length -Sum).Sum
-          $VhdSizeBytes = [math]::Ceiling($DirectorySizeBytes * 2 / 1048576 ) * 1048576
-          $VhdSizeBytes = [math]::Max($VhdSizeBytes, 50 * 1048576)
-          if (Test-Path -path $vhdPath) {
-              Remove-Item -Path $vhdPath -Force
+          if (Test-Path -path $OVM_OUT) {
+            $EMU_OUT = "${env:ARTIFACT_PATH}\Emulator${env:ARCH}\${env:TRGT}_${env:CHAIN}\${env:ARCH}\Host"
+            $VhdPath = "${OVM_OUT}\efi_disk.vhdx"
+            $DirectorySizeBytes = (Get-ChildItem -Path "${EMU_OUT}\EFI" -Recurse | Measure-Object -Property Length -Sum).Sum
+            $VhdSizeBytes = [math]::Ceiling($DirectorySizeBytes * 2 / 1048576 ) * 1048576
+            $VhdSizeBytes = [math]::Max($VhdSizeBytes, 50 * 1048576)
+            if (Test-Path -path $vhdPath) {
+                Remove-Item -Path $vhdPath -Force
+            }
+            try {
+                $vhd_obj = New-VHD -Path $VhdPath -Dynamic -SizeBytes $VhdSizeBytes | Mount-VHD -Passthru
+                $dsk_cim = $vhd_obj | Initialize-Disk -PartitionStyle MBR -Passthru
+                $prt_cim = $dsk_cim | New-Partition -AssignDriveLetter -UseMaximumSize
+                $prt_cim | Format-Volume -FileSystem FAT -Force
+                $VhdDriveLetter = $prt_cim.DriveLetter
+                Copy-Item -Path ${EMU_OUT}\EFI -Destination "${VhdDriveLetter}:\" -Recurse -Force
+            } finally {
+                Remove-PartitionAccessPath -DiskNumber $prt_cim.DiskNumber -PartitionNumber $prt_cim.PartitionNumber -AccessPath "${VhdDriveLetter}:"
+                Dismount-VHD -Path $VhdPath
+            }
+            Write-Output "VHD created at $VhdPath"
+          } else {
+              Write-Output "${OVM_OUT} does not exist"
           }
-          try {
-              $vhd_obj = New-VHD -Path $VhdPath -Dynamic -SizeBytes $VhdSizeBytes | Mount-VHD -Passthru
-              $dsk_cim = $vhd_obj | Initialize-Disk -PartitionStyle MBR -Passthru
-              $prt_cim = $dsk_cim | New-Partition -AssignDriveLetter -UseMaximumSize
-              $prt_cim | Format-Volume -FileSystem FAT -Force
-              $VhdDriveLetter = $prt_cim.DriveLetter
-              Copy-Item -Path ${EMU_OUT}\EFI -Destination "${VhdDriveLetter}:\" -Recurse -Force
-          } finally {
-              Remove-PartitionAccessPath -DiskNumber $prt_cim.DiskNumber -PartitionNumber $prt_cim.PartitionNumber -AccessPath "${VhdDriveLetter}:"
-              Dismount-VHD -Path $VhdPath
-          }
-          Write-Output "VHD created at $VhdPath"
 
       # filename: .github/workflows/bld_cmd_ci_vs22.yml
       - name: Upload Artifact
