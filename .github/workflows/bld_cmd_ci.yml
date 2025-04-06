@@ -175,8 +175,6 @@ jobs:
           )
 
       - name: Build UEFI Volume
-        # Robocopy will likely throw an error on one of these, so ignore and continue
-        continue-on-error: true
         run: |
           set VOLUME=%ARTIFACT_PATH%\Emulator%ARCH%\%TRGT%_%CHAIN%\%ARCH%\%EMU_HOST%
           pushd %ARTIFACT_PATH%
