@@ -65,23 +65,27 @@ jobs:
       #     long-paths: true          # Enable long path support
 
       - name: Install Python 3.12.9, NASM, IASL
+        if: ${{ github.event.inputs.hack != 'true' }}
         run: |
           curl -o ${{ github.workspace }}\%PYTHON_SETUP% https://www.python.org/ftp/python/%PYTHON_VERSION%/%PYTHON_SETUP%
           ${{ github.workspace }}\%PYTHON_SETUP% /quiet TargetDir=%PYTHON_PATH%
           choco install nasm iasl -y
 
       - name: Install Pip Requirements
+        if: ${{ github.event.inputs.hack != 'true' }}
         run: |
           %PYTHON_COMMAND% -m pip install --upgrade pip
           %PYTHON_COMMAND% -m pip install -r "%EDK2_PATH%\pip-requirements.txt"
 
       - name: Build BaseTools
+        if: ${{ github.event.inputs.hack != 'true' }}
         run: |
           pushd "%EDK2_PATH%"
           call edksetup.bat Reconfig %CHAIN%
           %PYTHON_COMMAND% BaseTools\Edk2ToolsBuild.py -t %CHAIN%
 
       - name: Setup and update Build_All
+        if: ${{ github.event.inputs.hack != 'true' }}
         run: |
           pushd "%EDK2_PATH%"
           call edksetup.bat Reconfig %CHAIN%
@@ -91,13 +95,14 @@ jobs:
       - name: Build Build_All
         # Compiler #2065: EmbeddedPkg\...\VirtualRealTimeClockLib.c(89): 'BUILD_EPOCH': undeclared
         continue-on-error: true
-        if: ${{ github.event.inputs.full == 'true' }}
+        if: ${{ github.event.inputs.full == 'true' && github.event.inputs.hack != 'true' }}
         run: |
           pushd "%EDK2_PATH%"
           call edksetup.bat Reconfig %CHAIN%
           %STUART%_ci_build -c .pytool\CISettings.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
 
       - name: Setup and update EmulatorPkg
+        if: ${{ github.event.inputs.hack != 'true' }}
         run: |
           pushd "%EDK2_PATH%"
           call edksetup.bat Reconfig %CHAIN%
@@ -105,12 +110,14 @@ jobs:
           %STUART%_update -c EmulatorPkg\PlatformCI\PlatformBuild.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
 
       - name: Build EmulatorPkg
+        if: ${{ github.event.inputs.hack != 'true' }}
         run: |
           pushd "%EDK2_PATH%"
           call edksetup.bat Reconfig %CHAIN%
           %STUART%_build -c EmulatorPkg\PlatformCI\PlatformBuild.py -a %ARCH% TOOL_CHAIN_TAG=%CHAIN% TARGET=%TRGT%
 
       - name: Setup and update OvmfPkg
+        if: ${{ github.event.inputs.hack != 'true' }}
         run: |
           pushd "%EDK2_PATH%"
           call edksetup.bat Reconfig %CHAIN%
@@ -118,6 +125,7 @@ jobs:
           %STUART%_update -c OvmfPkg\PlatformCI\PlatformBuild.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
 
       - name: Build OvmfPkg
+        if: ${{ github.event.inputs.hack != 'true' }}
         run: |
           pushd "%EDK2_PATH%"
           call edksetup.bat Reconfig %CHAIN%
