@@ -135,19 +135,19 @@ jobs:
       - name: Gather VS Environment Data
         continue-on-error: true
         run: |
-          mkdir /p "%EDK2_PATH%\Build\%%p
+          mkdir /p "%EDK2_PATH%\Build"
           pushd "%EDK2_PATH%"
           call edksetup.bat Reconfig %CHAIN%
-          pushd "%CD%\Build"
+          pushd "%EDK2_PATH%\Build"
           set > vmInfoEnvVars.txt
           vswhere -format json > vmInfoVswhere.json
-          jq -r ".[0].installationPath" vmInfoVswhere.json > vmInfoVsInstallPath.txt
           jq -r ".[0].properties.setupEngineFilePath" vmInfoVswhere.json > vmInfoVsSetupTool.txt
-          for /f "delims=;" %p in (vmInfoVsSetupTool.txt) do (
+          for /f "delims=;" %%p in (vmInfoVsSetupTool.txt) do (
             set VS_SETUP_PATH=%%~dpp
           )
           echo %VS_SETUP_PATH%\vs_installer.exe
           dir %VS_SETUP_PATH%\vs_installer.exe
+          jq -r ".[0].installationPath" vmInfoVswhere.json > vmInfoVsInstallPath.txt
           for /f "delims=;" %%p in (vmInfoVsInstallPath.txt) do (
             echo.| %VS_SETUP_PATH%\vs_installer.exe export --quiet --installPath "%%p" --config vmInfoVsConfig.json
           )
