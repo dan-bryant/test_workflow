@@ -1,5 +1,5 @@
 # filename: .github/workflows/bld_cmd_ci_vs22.yml
-name: Bld cmd,ci,py3129,vs22,x64,dbg
+name: Bld cmd,ci,vs22
 
 on:
   workflow_dispatch:  # Allows the workflow to be triggered manually
@@ -65,7 +65,7 @@ jobs:
       #     long-paths: true          # Enable long path support
 
       - name: Install Python 3.12.9, NASM, IASL
-        if: ${{ github.event.inputs.hack != 'true' }}
+        # if: ${{ github.event.inputs.hack != 'true' }}
         run: |
           curl -o ${{ github.workspace }}\%PYTHON_SETUP% https://www.python.org/ftp/python/%PYTHON_VERSION%/%PYTHON_SETUP%
           ${{ github.workspace }}\%PYTHON_SETUP% /quiet TargetDir=%PYTHON_PATH%
