@@ -12,7 +12,7 @@ on:
       full:
         description: "Build the most targets"
         required: false
-        default: "false"
+        default: "true"
       vs_year:
         description: "Visual Studio Year ( 22 | 19 | 15 )"
         required: false
@@ -20,7 +20,7 @@ on:
       target:
         description: "Build target (DEBUG | RELEASE)"
         required: false
-        default: "DEBUG"
+        default: "RELEASE"
       architecture:
         description: "Build architecture (X64 | IA32 | AARM64)"
         required: false
