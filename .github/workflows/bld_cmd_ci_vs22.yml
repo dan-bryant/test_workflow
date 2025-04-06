@@ -155,15 +155,14 @@ jobs:
         # Robocopy will likely throw an error on one of these, so ignore and continue
         continue-on-error: true
         run: |
-          pushd "%EDK2_PATH%\Build"
           for /d %%p in (. *) do (
-            robocopy %CD%\%%p "%ARTIFACT_PATH%\%%p" vmInfo*
-            robocopy %CD%\%%p "%ARTIFACT_PATH%\%%p" BUILDLOG*.txt
-            robocopy %CD%\%%p "%ARTIFACT_PATH%\%%p" *LOG.txt
-            robocopy %CD%\%%p\All\%TRGT%_%CHAIN%\%ARCH% "%ARTIFACT_PATH%\%%p\All\%TRGT%_%CHAIN%\%ARCH%" *.efi
-            robocopy %CD%\%%p\%TRGT%_%CHAIN%\%ARCH% "%ARTIFACT_PATH%\%%p\%TRGT%_%CHAIN%\%ARCH%" *.efi
-            robocopy %CD%\%%p\%TRGT%_%CHAIN%\%ARCH% "%ARTIFACT_PATH%\%%p\%TRGT%_%CHAIN%\%ARCH%" %EMU_HOST%*
-            robocopy %CD%\%%p\%DEBUG%_%VS2022%\FV "%ARTIFACT_PATH%\%%p\%DEBUG%_%VS2022%\FV" *
+            robocopy "%EDK2_PATH%\Build\%%p" "%ARTIFACT_PATH%\%%p" vmInfo*
+            robocopy "%EDK2_PATH%\Build\%%p" "%ARTIFACT_PATH%\%%p" BUILDLOG*.txt
+            robocopy "%EDK2_PATH%\Build\%%p" "%ARTIFACT_PATH%\%%p" *LOG.txt
+            robocopy "%EDK2_PATH%\Build\%%p\All\%TRGT%_%CHAIN%\%ARCH%" "%ARTIFACT_PATH%\%%p\All\%TRGT%_%CHAIN%\%ARCH%" *.efi
+            robocopy "%EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\%ARCH%" "%ARTIFACT_PATH%\%%p\%TRGT%_%CHAIN%\%ARCH%" *.efi
+            robocopy "%EDK2_PATH%\Build\%%p\%TRGT%_%CHAIN%\%ARCH%" "%ARTIFACT_PATH%\%%p\%TRGT%_%CHAIN%\%ARCH%" %EMU_HOST%*
+            robocopy "%EDK2_PATH%\Build\%%p\%DEBUG%_%VS2022%\FV" "%ARTIFACT_PATH%\%%p\%DEBUG%_%VS2022%\FV" *
           )
 
       # filename: .github/workflows/bld_cmd_ci_vs22.yml
