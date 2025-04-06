@@ -225,9 +225,9 @@ jobs:
           echo debug1
           copy %VOLUME%\EFI\Tools\Shell.efi %VOLUME%\EFI\Boot\bootx64.efi
           echo debug2
-          if exist %VOLUME%\..\%EMU_HOST%* (
+          if exist %VOLUME%\..\%EMU_HOST%.* (
             echo debug3
-            move %VOLUME%\..\%EMU_HOST%* %VOLUME%
+            move %VOLUME%\..\%EMU_HOST%.* %VOLUME%
           )
           echo debug4
 
