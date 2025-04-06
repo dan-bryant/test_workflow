@@ -64,11 +64,11 @@ jobs:
         shell: cmd
 
     steps:
-      - name: Install Pip Requirements
-        # if: ${{ github.event.inputs.hack != 'true' }}
-        run: |
-          %PYTHON_COMMAND% -m pip install --upgrade pip
-          %PYTHON_COMMAND% -m pip install PyYAML
+      # - name: Install Pip Requirements
+      #   # if: ${{ github.event.inputs.hack != 'true' }}
+      #   run: |
+      #     %PYTHON_COMMAND% -m pip install --upgrade pip
+      #     %PYTHON_COMMAND% -m pip install PyYAML
 
       - name: Extract artifact
         run: |
@@ -104,10 +104,10 @@ jobs:
           }
           Write-Output "VHD created at $VhdPath"
 
-      # # filename: .github/workflows/bld_cmd_ci_vs22.yml
-      # - name: Upload Artifact
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: bld-cmd-ci-vs${{ github.event.inputs.vs_year }}-${{ github.event.inputs.architecture }}-${{ github.event.inputs.target }}-Py_${{ github.event.inputs.python_version }}-Hack_${{ github.event.inputs.hack }}
-      #     path: ${{ env.ARTIFACT_PATH }}\**\*
+      # filename: .github/workflows/bld_cmd_ci_vs22.yml
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: bld-cmd-ci-vs${{ github.event.inputs.vs_year }}-${{ github.event.inputs.architecture }}-${{ github.event.inputs.target }}-Py_${{ github.event.inputs.python_version }}-Hack_${{ github.event.inputs.hack }}
+          path: ${{ env.ARTIFACT_PATH }}\**\*
 
