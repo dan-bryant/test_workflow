@@ -95,6 +95,7 @@ jobs:
           dir %cd%        
 
       - name: Build UEFI Volume
+        continue-on-error: true        
         run: |
           set VOLUME=%ARTIFACT_PATH%\Emulator%ARCH%\%TRGT%_%CHAIN%\%ARCH%\%EMU_HOST%
           pushd %ARTIFACT_PATH%
