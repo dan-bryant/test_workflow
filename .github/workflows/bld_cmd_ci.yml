@@ -22,7 +22,7 @@ on:
         required: false
         default: "DEBUG"
       architecture:
-        description: "Build architecture (X64 | IA32 | AARM64)"
+        description: "Build architecture (X64 | IA32 )"
         required: false
         default: "X64"
       python_version:
@@ -124,7 +124,7 @@ jobs:
           %STUART%_update -c OvmfPkg\PlatformCI\PlatformBuild.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
           %STUART%_build -c OvmfPkg\PlatformCI\PlatformBuild.py -a %ARCH% TOOL_CHAIN_TAG=%CHAIN% TARGET=%TRGT%
 
-      - name: Build Pkg ${{ github.event.inputs.build }}
+      - name: Build Single Pkg ${{ github.event.inputs.build }}
         if: ${{ github.event.inputs.build != 'All' && github.event.inputs.build != 'OvmfPkg' && github.event.inputs.build != 'EmulatorPkg' }}
         run: |
           pushd "%EDK2_PATH%"
@@ -137,9 +137,9 @@ jobs:
           set VOLUME=%ARTIFACT_PATH%\Emulator%ARCH%\%TRGT%_%CHAIN%\%ARCH%\Host
           pushd "%EDK2_PATH%"
           call edksetup.bat Reconfig %CHAIN%
-          pushd %ARTIFACT_PATH%
           mkdir %VOLUME%\EFI\Boot
           mkdir %VOLUME%\EFI\Tools
+          pushd %ARTIFACT_PATH%
           set > vmInfoEnvVars.txt
           vswhere -format json > vmInfoVswhere.json
           jq -r ".[0].properties.setupEngineFilePath" vmInfoVswhere.json > vmInfoVsSetupTool.txt
