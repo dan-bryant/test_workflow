@@ -160,9 +160,9 @@ jobs:
             robocopy %CD%\%%p "%ARTIFACT_PATH%\%%p" vmInfo*
             robocopy %CD%\%%p "%ARTIFACT_PATH%\%%p" BUILDLOG*.txt
             robocopy %CD%\%%p "%ARTIFACT_PATH%\%%p" *LOG.txt
-            robocopy %CD%\%%p\All\%DEBUG%_%VS2022%\%ARCH% "%ARTIFACT_PATH%\%%p\All\%DEBUG%_%VS2022%\%ARCH%" *.efi
-            robocopy %CD%\%%p\%DEBUG%_%VS2022%\%ARCH% "%ARTIFACT_PATH%\%%p\%DEBUG%_%VS2022%\%ARCH%" *.efi
-            robocopy %CD%\%%p\%DEBUG%_%VS2022%\%ARCH% "%ARTIFACT_PATH%\%%p\%DEBUG%_%VS2022%\%ARCH%" %EMU_HOST%*
+            robocopy %CD%\%%p\All\%TRGT%_%CHAIN%\%ARCH% "%ARTIFACT_PATH%\%%p\All\%TRGT%_%CHAIN%\%ARCH%" *.efi
+            robocopy %CD%\%%p\%TRGT%_%CHAIN%\%ARCH% "%ARTIFACT_PATH%\%%p\%TRGT%_%CHAIN%\%ARCH%" *.efi
+            robocopy %CD%\%%p\%TRGT%_%CHAIN%\%ARCH% "%ARTIFACT_PATH%\%%p\%TRGT%_%CHAIN%\%ARCH%" %EMU_HOST%*
             robocopy %CD%\%%p\%DEBUG%_%VS2022%\FV "%ARTIFACT_PATH%\%%p\%DEBUG%_%VS2022%\FV" *
           )
 
