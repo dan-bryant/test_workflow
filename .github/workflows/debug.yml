@@ -72,12 +72,12 @@ jobs:
 
       - name: Extract artifact
         run: |
-          curl -Lo out.zip https://github.com/dan-bryant/test_workflow/releases/download/run_14291373102/artifact.zip
+          curl -Lo out.zip https://github.com/dan-bryant/test_workflow/releases/download/run_14297350911/artifact.zip
           python -m zipfile -e out.zip %ARTIFACT_PATH%
           set VOLUME=%ARTIFACT_PATH%\Emulator%ARCH%\%TRGT%_%CHAIN%\%ARCH%\%EMU_HOST%
           pushd %ARTIFACT_PATH%
           echo %cd%
-          dir %cd%        
+          dir %cd%
 
       - name: Make VHDX
         shell: pwsh
@@ -92,15 +92,15 @@ jobs:
               Remove-Item -Path $vhdPath -Force
           }
           try {
-              $vhd_obj = New-VHD -Path $VhdPath -Dynamic -SizeBytes $VhdSizeBytes | Mount-VHD -Passthru 
+              $vhd_obj = New-VHD -Path $VhdPath -Dynamic -SizeBytes $VhdSizeBytes | Mount-VHD -Passthru
               $dsk_cim = $vhd_obj | Initialize-Disk -PartitionStyle MBR -Passthru
-              $prt_cim = $dsk_cim | New-Partition -AssignDriveLetter -UseMaximumSize 
+              $prt_cim = $dsk_cim | New-Partition -AssignDriveLetter -UseMaximumSize
               $prt_cim | Format-Volume -FileSystem FAT -Force
               $VhdDriveLetter = $prt_cim.DriveLetter
-              Copy-Item -Path ${EMU_OUT}\EFI -Destination "${VhdDriveLetter}:\" -Recurse -Force    
+              Copy-Item -Path ${EMU_OUT}\EFI -Destination "${VhdDriveLetter}:\" -Recurse -Force
           } finally {
               Remove-PartitionAccessPath -DiskNumber $prt_cim.DiskNumber -PartitionNumber $prt_cim.PartitionNumber -AccessPath "${VhdDriveLetter}:"
-              Dismount-VHD -Path $VhdPath    
+              Dismount-VHD -Path $VhdPath
           }
           Write-Output "VHD created at $VhdPath"
 
