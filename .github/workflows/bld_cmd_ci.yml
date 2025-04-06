@@ -201,10 +201,14 @@ jobs:
           for /d %%p in (*) do (
             robocopy "%ARTIFACT_PATH%\%%p\%TRGT%_%CHAIN%\%ARCH%" "%VOLUME%\EFI\Tools" *.efi /XO
           )
+          echo debug1
           copy %VOLUME%\EFI\Tools\Shell.efi %VOLUME%\EFI\Boot\bootx64.efi
+          echo debug2
           if exist %VOLUME%\..\%EMU_HOST%* ( 
+            echo debug3
             move %VOLUME%\..\%EMU_HOST%* %VOLUME% 
           )
+          echo debug4
 
       # filename: .github/workflows/bld_cmd_ci_vs22.yml
       - name: Upload Artifact
