@@ -201,10 +201,8 @@ jobs:
           for /d %%p in (*) do (
             robocopy "%ARTIFACT_PATH%\%%p\%TRGT%_%CHAIN%\%ARCH%" "%VOLUME%\EFI\Tools" *.efi /XO
           )
-          if exists %VOLUME%\EFI\Tools\Shell.efi (
-            copy %VOLUME%\EFI\Tools\Shell.efi %VOLUME%\EFI\Boot\bootx64.efi
-          )
-          if exists %VOLUME%\..\%EMU_HOST%* (
+          copy %VOLUME%\EFI\Tools\Shell.efi %VOLUME%\EFI\Boot\bootx64.efi
+          if exist %VOLUME%\..\%EMU_HOST%* (
             move %VOLUME%\..\%EMU_HOST%* %VOLUME%
           )
 
