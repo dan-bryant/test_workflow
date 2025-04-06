@@ -12,7 +12,7 @@ on:
       full:
         description: "Build the most targets"
         required: false
-        default: "true"
+        default: "false"
       vs_year:
         description: "Visual Studio Year ( 22 | 19 | 15 )"
         required: false
@@ -20,7 +20,7 @@ on:
       target:
         description: "Build target (DEBUG | RELEASE)"
         required: false
-        default: "RELEASE"
+        default: "DEBUG"
       architecture:
         description: "Build architecture (X64 | IA32 | AARM64)"
         required: false
@@ -49,6 +49,8 @@ jobs:
       PYTHON_SETUP: python-${{ github.event.inputs.python_version }}-amd64.exe
       STUART: D:\Python${{ github.event.inputs.python_version }}\Scripts\stuart
       GH_REPO_URL: ${{ github.server_url }}/${{ github.repository }}
+      GH_WORKFLOW_NAME: ${{ github.workflow }}
+      BUILD_BAT: mk_bat.py
       REPO_PATH: D:\r
       EDK2_PATH: D:\r\Edk2
       ARTIFACT_PATH: D:\artifact
@@ -142,13 +144,11 @@ jobs:
 
       - name: Gather VS Environment Data
         run: |
+          set VOLUME=%ARTIFACT_PATH%\Emulator%ARCH%\%TRGT%_%CHAIN%\%ARCH%\%EMU_HOST%
           pushd "%EDK2_PATH%"
           call edksetup.bat Reconfig %CHAIN%
-          pushd "%EDK2_PATH%\Build"
+          pushd "%VOLUME%"
           set > vmInfoEnvVars.txt
-          echo %GH_HEAD_SHA% > vmInfo%CHAIN%-%ARCH%-%TRGT%-Py%PYTHON_VERSION%.txt
-          dir /s /b /a:-d > vmInfoFileListing.txt
-          dir /s /b /a:d > vmInfoDirListing.txt
           vswhere -format json > vmInfoVswhere.json
           jq -r ".[0].properties.setupEngineFilePath" vmInfoVswhere.json > vmInfoVsSetupTool.txt
           for /f "delims=;" %%p in (vmInfoVsSetupTool.txt) do (
@@ -163,9 +163,10 @@ jobs:
         # Robocopy will likely throw an error on one of these, so ignore and continue
         continue-on-error: true
         run: |
+          set VOLUME=%ARTIFACT_PATH%\Emulator%ARCH%\%TRGT%_%CHAIN%\%ARCH%\%EMU_HOST%
           pushd "%EDK2_PATH%\Build"
           echo "%CD%"
-          robocopy "%REPO_PATH%" "%ARTIFACT_PATH%" *.yml
+          robocopy %REPO_PATH%\.github\workflows "%ARTIFACT_PATH%" *.yml
           for /d %%p in (. *) do (
             robocopy "%EDK2_PATH%\Build\%%p" "%ARTIFACT_PATH%\%%p" vmInfo*
             robocopy "%EDK2_PATH%\Build\%%p" "%ARTIFACT_PATH%\%%p" BUILDLOG*.txt
@@ -180,6 +181,19 @@ jobs:
         run: |
           set VOLUME=%ARTIFACT_PATH%\Emulator%ARCH%\%TRGT%_%CHAIN%\%ARCH%\%EMU_HOST%
           pushd %ARTIFACT_PATH%
+          echo %GH_HEAD_SHA% > vmInfo%CHAIN%-%ARCH%-%TRGT%-Py%PYTHON_VERSION%.txt
+          dir /s /b /a:-d > repoFileListing.txt
+          dir /s /b /a:d > repoDirListing.txt
+          findstr /m /c:"%GH_WORKFLOW_NAME%" .github\workflows\*.yml > repoWorkflowFile.txt
+          for /f "delims=;" %%p in (repoWorkflowFile.txt) do (
+            set GH_WORKFLOW_FILE=%%~dpp
+          )
+          set BAT_FILE=build%CHAIN%-%ARCH%-%TRGT%-Py%PYTHON_VERSION%.bat
+          %PYTHON_COMMAND% %REPO_PATH%\%BUILD_BAT% %GH_WORKFLOW_FILE% %BAT_FILE%
+          echo efiVolume: %VOLUME%>> README.txt
+          echo gitTag: %GH_HEAD_SHA%>> README.txt
+          echo workflowFile: %GH_WORKFLOW_FILE%>> README.txt
+          echo batFile: %BAT_FILE%>> README.txt
           mkdir %VOLUME%\EFI\Boot
           mkdir %VOLUME%\EFI\Tools
           for /d %%p in (*) do (
