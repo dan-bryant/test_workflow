@@ -137,9 +137,9 @@ jobs:
           set VOLUME=%ARTIFACT_PATH%\Emulator%ARCH%\%TRGT%_%CHAIN%\%ARCH%\Host
           pushd "%EDK2_PATH%"
           call edksetup.bat Reconfig %CHAIN%
+          pushd "%EDK2_PATH%\Build"
           mkdir %VOLUME%\EFI\Boot
           mkdir %VOLUME%\EFI\Tools
-          pushd "%VOLUME%"
           set > vmInfoEnvVars.txt
           vswhere -format json > vmInfoVswhere.json
           jq -r ".[0].properties.setupEngineFilePath" vmInfoVswhere.json > vmInfoVsSetupTool.txt
@@ -153,12 +153,12 @@ jobs:
 
       - name: Package Build Outputs
         # Robocopy will likely throw an error on one of these, so ignore and continue
-        continue-on-error: true
+        # continue-on-error: true
         run: |
           set VOLUME=%ARTIFACT_PATH%\Emulator%ARCH%\%TRGT%_%CHAIN%\%ARCH%\Host
           pushd "%EDK2_PATH%\Build"
           echo "%CD%"
-          xcopy %REPO_PATH%\.github\workflows\*.yml "%ARTIFACT_PATH%\" 
+          xcopy %REPO_PATH%\.github\workflows\*.yml "%ARTIFACT_PATH%\"
           for /d %%p in (. *) do (
             if exist %EDK2_PATH%\Build\%%p\vmInfo* (
               xcopy %EDK2_PATH%\Build\%%p\vmInfo* "%ARTIFACT_PATH%\%%p\" /D /Y || echo ERROR: %EDK2_PATH%\Build\%%p\vmInfo*
