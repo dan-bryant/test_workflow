@@ -62,7 +62,7 @@ jobs:
       CHAIN: VS20${{ github.event.inputs.vs_year }}
       ARCH: ${{ github.event.inputs.architecture }}
       TRGT: ${{ github.event.inputs.target }}
-      BUILD_LBL: >
+      BUILD_LBL: >-
         -vs${{ github.event.inputs.vs_year }}
         -${{ github.event.inputs.architecture }}
         -${{ github.event.inputs.target }}
@@ -175,7 +175,7 @@ jobs:
         run: |
           pushd "%EDK2_PATH%\Build"
           echo "%CD%"
-          robocopy "%REPO_PATH%" "%ARTIFACT_PATH%" *.yml 
+          robocopy "%REPO_PATH%" "%ARTIFACT_PATH%" *.yml
           for /d %%p in (. *) do (
             robocopy "%EDK2_PATH%\Build\%%p" "%ARTIFACT_PATH%\%%p" vmInfo*
             robocopy "%EDK2_PATH%\Build\%%p" "%ARTIFACT_PATH%\%%p" BUILDLOG*.txt
