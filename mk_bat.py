@@ -166,15 +166,6 @@ jobs:
           set VOLUME=%ARTIFACT_PATH%\Emulator%ARCH%\%TRGT%_%CHAIN%\%ARCH%\%EMU_HOST%
           pushd "%EDK2_PATH%\Build"
           echo "%CD%"
-          echo %GH_HEAD_SHA% > vmInfo%CHAIN%-%ARCH%-%TRGT%-Py%PYTHON_VERSION%.txt
-          dir /s /b /a:-d > repoFileListing.txt
-          dir /s /b /a:d > repoDirListing.txt
-          findstr /m /c:"%GH_WORKFLOW_NAME%" .github\workflows\*.yml > repoWorkflowFile.txt
-          for /f "delims=;" %%p in (repoWorkflowFile.txt) do (
-            set GH_WORKFLOW_FILE=%%~dpp
-          )
-          set BAT_FILE=build%CHAIN%-%ARCH%-%TRGT%-Py%PYTHON_VERSION%.bat
-          %PYTHON_COMMAND% %REPO_PATH%\%BUILD_BAT% %GH_WORKFLOW_FILE% %BAT_FILE%
           robocopy %REPO_PATH%\.github\workflows "%ARTIFACT_PATH%" *.yml
           for /d %%p in (. *) do (
             robocopy "%EDK2_PATH%\Build\%%p" "%ARTIFACT_PATH%\%%p" vmInfo*
@@ -190,6 +181,19 @@ jobs:
         run: |
           set VOLUME=%ARTIFACT_PATH%\Emulator%ARCH%\%TRGT%_%CHAIN%\%ARCH%\%EMU_HOST%
           pushd %ARTIFACT_PATH%
+          echo %GH_HEAD_SHA% > vmInfo%CHAIN%-%ARCH%-%TRGT%-Py%PYTHON_VERSION%.txt
+          dir /s /b /a:-d > repoFileListing.txt
+          dir /s /b /a:d > repoDirListing.txt
+          findstr /m /c:"%GH_WORKFLOW_NAME%" .github\workflows\*.yml > repoWorkflowFile.txt
+          for /f "delims=;" %%p in (repoWorkflowFile.txt) do (
+            set GH_WORKFLOW_FILE=%%~dpp
+          )
+          set BAT_FILE=build%CHAIN%-%ARCH%-%TRGT%-Py%PYTHON_VERSION%.bat
+          %PYTHON_COMMAND% %REPO_PATH%\%BUILD_BAT% %GH_WORKFLOW_FILE% %BAT_FILE%
+          echo efiVolume: %VOLUME%>> README.txt
+          echo gitTag: %GH_HEAD_SHA%>> README.txt
+          echo workflowFile: %GH_WORKFLOW_FILE%>> README.txt
+          echo batFile: %BAT_FILE%>> README.txt
           mkdir %VOLUME%\EFI\Boot
           mkdir %VOLUME%\EFI\Tools
           for /d %%p in (*) do (
