@@ -186,7 +186,7 @@ jobs:
           dir /s /b /a:d > repoDirListing.txt
           findstr /m /c:"%GH_WORKFLOW_NAME%" %REPO_PATH%\.github\workflows\*.yml > repoWorkflowFile.txt
           for /f "delims=;" %%p in (repoWorkflowFile.txt) do (
-            set GH_WORKFLOW_FILE=%%~dpp
+            set GH_WORKFLOW_FILE=%%~pnxp
           )
           for %%p in (%VOLUME%) do (
             echo efiVolume: %%~pnxp>> README.txt
