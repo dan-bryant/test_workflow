@@ -66,6 +66,6 @@ jobs:
       - name: Build UEFI Volume
         run: |
           set VOLUME=%ARTIFACT_PATH%\Emulator%ARCH%\%TRGT%_%CHAIN%\%ARCH%\%EMU_HOST%
-          echo if exist %VOLUME%\..\%EMU_HOST%* ( move %VOLUME%\..\%EMU_HOST%* %VOLUME% )
+          if exist %VOLUME%\..\%EMU_HOST%* ( move %VOLUME%\..\%EMU_HOST%* %VOLUME% )
 
 
