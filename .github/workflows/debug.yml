@@ -12,7 +12,7 @@ on:
       build:
         description: "Pkg ( ie. EmulatorPkg, OvmfPkg, Edk2, All )"
         required: false
-        default: "EmulatorPkg"
+        default: "OvmfPkg"
       vs_year:
         description: "Visual Studio Year ( 22 | 19 )"
         required: false
@@ -87,6 +87,7 @@ jobs:
       - name: Make VHDX File (pwsh)
         shell: pwsh
         run: |
+          $env:CHAIN = "VS2022"
           $OVM_OUT = "${env:ARTIFACT_PATH}\Ovmf${env:ARCH}\${env:TRGT}_${env:CHAIN}"
           if (Test-Path -path $OVM_OUT) {
             $EMU_OUT = "${env:ARTIFACT_PATH}\Emulator${env:ARCH}\${env:TRGT}_${env:CHAIN}\${env:ARCH}\Host"
