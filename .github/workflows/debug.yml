@@ -103,7 +103,10 @@ jobs:
                 Remove-PartitionAccessPath -DiskNumber $prt_cim.DiskNumber -PartitionNumber $prt_cim.PartitionNumber -AccessPath "${VhdDriveLetter}:"
                 Dismount-VHD -Path $VhdPath
             }
-            $qemu_cmd = ("pushd ${OVM_OUT} && wsl qemu-system-x86_64 -m 4096" +
+            $base = New-Object System.Uri("${env:ARTIFACT_PATH}\")
+            $fullpath = New-Object System.Uri("${OVM_OUT}")
+            $relpath = $base.MakeRelativeUri($fullpath).ToString() -replace '/', '\'
+            $qemu_cmd = ("pushd ${relpath} && wsl qemu-system-x86_64 -m 4096" +
               " -drive if=pflash,format=raw,readonly=on,file=FV/OVMF_CODE.fd" +
               " -drive if=pflash,format=raw,file=FV/OVMF_VARS.fd" +
               " -drive file=efi_disk.vhdx,format=vhdx")
