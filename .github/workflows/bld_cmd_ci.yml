@@ -211,13 +211,15 @@ jobs:
             copy %VOLUME%\EFI\Tools\Shell.efi %VOLUME%\EFI\Boot\bootx64.efi
           )
 
+      - name: Install VHDX Tools
+        shell: pwsh
+        if: ${{ github.event.inputs.vs_year == '19' }}
+        run: Install-WindowsFeature -Name RSAT-Hyper-V-Tools
+
       - name: Make VHDX
         shell: pwsh
         run: |
           $OVM_OUT = "${env:ARTIFACT_PATH}\Ovmf${env:ARCH}\${env:TRGT}_${env:CHAIN}"
-          if ("${env:CHAIN}" -eq "VS2019") {
-            Install-WindowsFeature -Name RSAT-Hyper-V-Tools
-          }
           if (Test-Path -path $OVM_OUT) {
             $EMU_OUT = "${env:ARTIFACT_PATH}\Emulator${env:ARCH}\${env:TRGT}_${env:CHAIN}\${env:ARCH}\Host"
             $VhdPath = "${OVM_OUT}\efi_disk.vhdx"
