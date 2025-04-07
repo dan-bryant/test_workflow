@@ -103,7 +103,7 @@ jobs:
             exit                                                          `n `
             "
             $DiskPartScript | diskpart
-            Copy-Item -Path ${EMU_OUT}\EFI -Destination "${VhdDriveLetter}:\" -Recurse -Force
+            Copy-Item -Path ${EMU_OUT}\EFI -Destination "${DrvLetter}:\" -Recurse -Force
             $DiskPartScript = "         `n `
             select vdisk file=$VhdPath  `n `
             select volume=$DrvLetter    `n `
