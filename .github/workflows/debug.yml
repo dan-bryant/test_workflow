@@ -83,7 +83,9 @@ jobs:
         shell: pwsh
         run: |
           $OVM_OUT = "${env:ARTIFACT_PATH}\Ovmf${env:ARCH}\${env:TRGT}_${env:CHAIN}"
-          if (Test-Path -path $OVM_OUT) {
+          Get-Command *vhd*
+          # if (Test-Path -path $OVM_OUT) {
+          if (0) {
             $EMU_OUT = "${env:ARTIFACT_PATH}\Emulator${env:ARCH}\${env:TRGT}_${env:CHAIN}\${env:ARCH}\Host"
             $VhdPath = "${OVM_OUT}\efi_disk.vhdx"
             $DirectorySizeBytes = (Get-ChildItem -Path "${EMU_OUT}\EFI" -Recurse | Measure-Object -Property Length -Sum).Sum
