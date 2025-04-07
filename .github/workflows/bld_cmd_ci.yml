@@ -1,11 +1,11 @@
 # filename: .github/workflows/bld_cmd_ci.yml
 name: Build with CMD and CI on VS
 run-name: >-
-  ci-cmd-${{ github.event.inputs.build 
-    }}-vs${{ github.event.inputs.vs_year 
-    }}-${{ github.event.inputs.architecture 
-    }}-${{ github.event.inputs.target 
-    }}-Py_${{ github.event.inputs.python_version 
+  ci-cmd-${{ github.event.inputs.build
+    }}-vs${{ github.event.inputs.vs_year
+    }}-${{ github.event.inputs.architecture
+    }}-${{ github.event.inputs.target
+    }}-Py_${{ github.event.inputs.python_version
     }}-h_${{ github.event.inputs.hack }}
 
 on:
@@ -101,7 +101,7 @@ jobs:
       - name: Build Edk2
         # Compiler #2065: EmbeddedPkg\...\VirtualRealTimeClockLib.c(89): 'BUILD_EPOCH': undeclared
         continue-on-error: true
-        if: >
+        if: >-
           ${{ github.event.inputs.build == 'All' ||
               github.event.inputs.build == 'Edk2' }}
         run: |
@@ -112,7 +112,7 @@ jobs:
           %STUART%_ci_build -c .pytool\CISettings.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
 
       - name: Build EmulatorPkg
-        if: >
+        if: >-
           ${{ github.event.inputs.build == 'All' ||
               github.event.inputs.build == 'EmulatorPkg' ||
               github.event.inputs.hack == 'true' }}
@@ -124,7 +124,7 @@ jobs:
           %STUART%_build -c EmulatorPkg\PlatformCI\PlatformBuild.py -a %ARCH% TOOL_CHAIN_TAG=%CHAIN% TARGET=%TRGT%
 
       - name: Build OvmfPkg
-        if: >
+        if: >-
           ${{ github.event.inputs.build == 'All' ||
               github.event.inputs.build == 'OvmfPkg' ||
               github.event.inputs.hack == 'true' }}
@@ -137,7 +137,7 @@ jobs:
           %STUART%_build -c OvmfPkg\PlatformCI\PlatformBuild.py -a %ARCH% TOOL_CHAIN_TAG=%CHAIN% TARGET=%TRGT%
 
       - name: Build Single Pkg ${{ github.event.inputs.build }}
-        if: >
+        if: >-
           ${{ github.event.inputs.build != 'All' &&
               github.event.inputs.build != 'OvmfPkg' &&
               github.event.inputs.build != 'EmulatorPkg' }}
@@ -314,12 +314,12 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: >-
-            ci-cmd-${{ github.event.inputs.build 
-            }}-vs${{ github.event.inputs.vs_year 
-            }}-${{ github.event.inputs.architecture 
-            }}-${{ github.event.inputs.target 
-            }}-Py_${{ github.event.inputs.python_version 
+            ci-cmd-${{ github.event.inputs.build
+            }}-vs${{ github.event.inputs.vs_year
+            }}-${{ github.event.inputs.architecture
+            }}-${{ github.event.inputs.target
+            }}-Py_${{ github.event.inputs.python_version
             }}-h_${{ github.event.inputs.hack }}
-        
+
           path: ${{ env.ARTIFACT_PATH }}\**\*
 
