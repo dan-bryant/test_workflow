@@ -1,10 +1,10 @@
 # filename: .github/workflows/bld_cmd_ci.yml
 name: Debug CI
 run-name: >-
-  debug-vs${{ github.event.inputs.vs_year 
-    }}-${{ github.event.inputs.architecture 
-    }}-${{ github.event.inputs.target 
-    }}-Py_${{ github.event.inputs.python_version 
+  debug-vs${{ github.event.inputs.vs_year
+    }}-${{ github.event.inputs.architecture
+    }}-${{ github.event.inputs.target
+    }}-Py_${{ github.event.inputs.python_version
     }}-Hack_${{ github.event.inputs.hack }}
 
 on:
@@ -76,6 +76,8 @@ jobs:
       #     %PYTHON_COMMAND% -m pip install PyYAML
 
       - name: Extract artifact
+        if: >-
+          ${{ github.event.inputs.hack == 'true' }}
         run: |
           curl -Lo out.zip https://github.com/dan-bryant/test_workflow/releases/download/run_14297350911/artifact.zip
           python -m zipfile -e out.zip %ARTIFACT_PATH%
@@ -86,7 +88,9 @@ jobs:
 
       - name: Make VHDX File (pwsh:2019)
         shell: pwsh
-        if: ${{ github.event.inputs.vs_year == '19' }}
+        if: >-
+          ${{ github.event.inputs.hack == 'true' &&
+              github.event.inputs.vs_year == '19' }}
         run: |
           $env:CHAIN = "VS2022"
           $OVM_OUT = "${env:ARTIFACT_PATH}\Ovmf${env:ARCH}\${env:TRGT}_${env:CHAIN}"
@@ -127,12 +131,14 @@ jobs:
             Out-File -FilePath "${env:ARTIFACT_PATH}\wsl_emu.bat" -InputObject $qemu_cmd -Encoding ascii
             Write-Output "VHD created at $VhdPath"
           } else {
-              Write-Output "${OVM_OUT} does not exist"  
+              Write-Output "${OVM_OUT} does not exist"
           }
 
       - name: Make VHDX File (pwsh:2022)
         shell: pwsh
-        if: ${{ github.event.inputs.vs_year == '22' }}
+        if: >-
+          ${{ github.event.inputs.hack == 'true' &&
+              github.event.inputs.vs_year == '22' }}
         run: |
           $env:CHAIN = "VS2022"
           $OVM_OUT = "${env:ARTIFACT_PATH}\Ovmf${env:ARCH}\${env:TRGT}_${env:CHAIN}"
@@ -168,10 +174,10 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: >-
-            debug-vs${{ github.event.inputs.vs_year 
-              }}-${{ github.event.inputs.architecture 
-              }}-${{ github.event.inputs.target 
-              }}-Py_${{ github.event.inputs.python_version 
+            debug-vs${{ github.event.inputs.vs_year
+              }}-${{ github.event.inputs.architecture
+              }}-${{ github.event.inputs.target
+              }}-Py_${{ github.event.inputs.python_version
               }}-Hack_${{ github.event.inputs.hack }}
           path: ${{ env.ARTIFACT_PATH }}\**\*
 
