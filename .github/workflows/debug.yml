@@ -79,10 +79,21 @@ jobs:
           echo %cd%
           dir %cd%
 
-      - name: Install VHDX Tools (pwsh)
+      - name: Test some stuff out
         shell: powershell
         if: ${{ github.event.inputs.vs_year == '19' }}
-        run: Install-WindowsFeature -Name RSAT-Hyper-V-Tools
+        run: |
+          $env:CHAIN = "VS2022"
+          $OVM_OUT = "${env:ARTIFACT_PATH}\Ovmf${env:ARCH}\${env:TRGT}_${env:CHAIN}"
+          $EMU_OUT = "${env:ARTIFACT_PATH}\Emulator${env:ARCH}\${env:TRGT}_${env:CHAIN}\${env:ARCH}\Host"
+          $VhdPath = "${OVM_OUT}\efi_disk.vhdx"
+          $DirectorySizeBytes = (Get-ChildItem -Path "${EMU_OUT}\EFI" -Recurse | Measure-Object -Property Length -Sum).Sum
+          $VhdSizeBytes = [math]::Ceiling($DirectorySizeBytes * 2 / 1048576 ) * 1048576
+          $VhdSizeBytes = [math]::Max($VhdSizeBytes, 50 * 1048576)
+          $VhdService = Get-WmiObject -Namespace "Root\Virtualization" -Class "Msvm_ImageManagementService"
+          $cvhd_obj = $VhdService.CreateDynamicVirtualHardDisk($VhdPath, $VhdSizeBytes)
+          Select-Object -Property * -InputObject $cvhd_obj
+          Get-Member -InputObject $cvhd_obj 
 
       - name: Make VHDX File (pwsh)
         shell: powershell
@@ -95,9 +106,6 @@ jobs:
             $DirectorySizeBytes = (Get-ChildItem -Path "${EMU_OUT}\EFI" -Recurse | Measure-Object -Property Length -Sum).Sum
             $VhdSizeBytes = [math]::Ceiling($DirectorySizeBytes * 2 / 1048576 ) * 1048576
             $VhdSizeBytes = [math]::Max($VhdSizeBytes, 50 * 1048576)
-            if (Test-Path -path $vhdPath) {
-                Remove-Item -Path $vhdPath -Force
-            }
             $vhd_obj = New-VHD -Path $VhdPath -Dynamic -SizeBytes $VhdSizeBytes | Mount-VHD -Passthru
             $dsk_cim = $vhd_obj | Initialize-Disk -PartitionStyle MBR -Passthru
             $prt_cim = $dsk_cim | New-Partition -AssignDriveLetter -UseMaximumSize
