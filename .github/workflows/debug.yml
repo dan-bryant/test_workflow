@@ -80,12 +80,12 @@ jobs:
           dir %cd%
 
       - name: Install VHDX Tools (pwsh)
-        shell: pwsh
+        shell: powershell
         if: ${{ github.event.inputs.vs_year == '19' }}
         run: Install-WindowsFeature -Name RSAT-Hyper-V-Tools
 
       - name: Make VHDX File (pwsh)
-        shell: pwsh
+        shell: powershell
         run: |
           $env:CHAIN = "VS2022"
           $OVM_OUT = "${env:ARTIFACT_PATH}\Ovmf${env:ARCH}\${env:TRGT}_${env:CHAIN}"
