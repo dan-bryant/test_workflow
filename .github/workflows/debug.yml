@@ -1,6 +1,11 @@
 # filename: .github/workflows/bld_cmd_ci.yml
 name: Debug CI
-run-name: debug${{ github.event.inputs.vs_year }}-${{ github.event.inputs.architecture }}-${{ github.event.inputs.target }}-Py_${{ github.event.inputs.python_version }}-Hack_${{ github.event.inputs.hack }}
+run-name: >-
+  debug-vs${{ github.event.inputs.vs_year 
+    }}-${{ github.event.inputs.architecture 
+    }}-${{ github.event.inputs.target 
+    }}-Py_${{ github.event.inputs.python_version 
+    }}-Hack_${{ github.event.inputs.hack }}
 
 on:
   workflow_dispatch:  # Allows the workflow to be triggered manually
@@ -162,6 +167,11 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: bld-cmd-ci-vs${{ github.event.inputs.vs_year }}-${{ github.event.inputs.architecture }}-${{ github.event.inputs.target }}-Py_${{ github.event.inputs.python_version }}-Hack_${{ github.event.inputs.hack }}
+          name: >-
+            debug-vs${{ github.event.inputs.vs_year 
+              }}-${{ github.event.inputs.architecture 
+              }}-${{ github.event.inputs.target 
+              }}-Py_${{ github.event.inputs.python_version 
+              }}-Hack_${{ github.event.inputs.hack }}
           path: ${{ env.ARTIFACT_PATH }}\**\*
 
