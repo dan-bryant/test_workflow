@@ -76,6 +76,7 @@ jobs:
       #     %PYTHON_COMMAND% -m pip install PyYAML
 
       - name: show run id
+        if: ${{ github.event.inputs.hack != 'true' }}
         env:
           GH_TOKEN: ${{ github.token }}
         run: |-
@@ -87,7 +88,7 @@ jobs:
       - name: Extract artifact
         if: >-
           ${{ github.event.inputs.hack == 'true' }}
-        run: |
+        run: |-
           curl -Lo out.zip https://github.com/dan-bryant/test_workflow/releases/download/run_14297350911/artifact.zip
           python -m zipfile -e out.zip %ARTIFACT_PATH%
           set VOLUME=%ARTIFACT_PATH%\Emulator%ARCH%\%TRGT%_%CHAIN%\%ARCH%\%EMU_HOST%
@@ -100,7 +101,7 @@ jobs:
         if: >-
           ${{ github.event.inputs.hack == 'true' &&
               github.event.inputs.vs_year == '19' }}
-        run: |
+        run: |-
           $env:CHAIN = "VS2022"
           $OVM_OUT = "${env:ARTIFACT_PATH}\Ovmf${env:ARCH}\${env:TRGT}_${env:CHAIN}"
           if (Test-Path -path $OVM_OUT) {
@@ -111,24 +112,24 @@ jobs:
             $VhdSizeBytes = [math]::Max($VhdSizeBytes, 50 * 1048576)
             $VhdSizeMB = $VhdSizeBytes / 1048576
             $DrvLetter = 'V'
-            $DiskPartScript = @("",
-              "create vdisk file=$VhdPath maximum=$VhdSizeMB type=expandable",
-              "select vdisk file=$VhdPath",
-              "attach vdisk",
-              "create partition primary",
-              "format fs=fat quick",
-              "assign letter=$DrvLetter",
-              "exit",
-            "") -join "`n"
+            $DiskPartScript  = @"
+            create vdisk file="$VhdPath" maximum=$VhdSizeMB type=expandable
+            select vdisk file="$VhdPath"
+            attach vdisk
+            create partition primary
+            format fs=fat quick
+            assign letter=$DrvLetter
+            exit
+            "@
             $DiskPartScript | diskpart
             Copy-Item -Path ${EMU_OUT}\EFI -Destination "${DrvLetter}:\" -Recurse -Force
-            $DiskPartScript = ("",
-              "select vdisk file=$VhdPath",
-              "select volume=$DrvLetter",
-              "remove letter=$DrvLetter",
-              "detach vdisk",
-              "exit",
-            "") -join "`n"
+            $DiskPartScript = @"
+            select vdisk file="$VhdPath"
+            select volume=$DrvLetter
+            remove letter=$DrvLetter
+            detach vdisk
+            exit
+            "@
             $DiskPartScript | diskpart
             $base = New-Object System.Uri("${env:ARTIFACT_PATH}\")
             $fullpath = New-Object System.Uri("${OVM_OUT}")
