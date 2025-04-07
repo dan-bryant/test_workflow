@@ -235,6 +235,14 @@ jobs:
                 Remove-PartitionAccessPath -DiskNumber $prt_cim.DiskNumber -PartitionNumber $prt_cim.PartitionNumber -AccessPath "${VhdDriveLetter}:"
                 Dismount-VHD -Path $VhdPath
             }
+            $base = New-Object System.Uri("${env:ARTIFACT_PATH}\")
+            $fullpath = New-Object System.Uri("${OVM_OUT}")
+            $relpath = $base.MakeRelativeUri($fullpath).ToString() -replace '/', '\'
+            $qemu_cmd = ("pushd ${relpath} && wsl qemu-system-x86_64 -m 4096" +
+              " -drive if=pflash,format=raw,readonly=on,file=FV/OVMF_CODE.fd" +
+              " -drive if=pflash,format=raw,file=FV/OVMF_VARS.fd" +
+              " -drive file=efi_disk.vhdx,format=vhdx")
+            Out-File -FilePath "${env:ARTIFACT_PATH}\wsl_emu.bat" -InputObject $qemu_cmd -Encoding ascii
             Write-Output "VHD created at $VhdPath"
           } else {
               Write-Output "${OVM_OUT} does not exist"
