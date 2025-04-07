@@ -127,7 +127,7 @@ jobs:
 
       - name: Make VHDX File (pwsh:2022)
         shell: pwsh
-        if: ${{ github.event.inputs.vs_year == '19' }}
+        if: ${{ github.event.inputs.vs_year == '22' }}
         run: |
           $env:CHAIN = "VS2022"
           $OVM_OUT = "${env:ARTIFACT_PATH}\Ovmf${env:ARCH}\${env:TRGT}_${env:CHAIN}"
