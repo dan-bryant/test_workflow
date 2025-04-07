@@ -79,11 +79,15 @@ jobs:
           echo %cd%
           dir %cd%
 
-      - name: Make VHDX
+      - name: Install VHDX Tools (pwsh)
+        shell: pwsh
+        if: ${{ github.event.inputs.vs_year == '19' }}
+        run: Install-WindowsFeature -Name RSAT-Hyper-V-Tools
+
+      - name: Make VHDX File (pwsh)
         shell: pwsh
         run: |
           $OVM_OUT = "${env:ARTIFACT_PATH}\Ovmf${env:ARCH}\${env:TRGT}_${env:CHAIN}"
-          Install-WindowsFeature -Name RSAT-Hyper-V-Tools
           if (Test-Path -path $OVM_OUT) {
             $EMU_OUT = "${env:ARTIFACT_PATH}\Emulator${env:ARCH}\${env:TRGT}_${env:CHAIN}\${env:ARCH}\Host"
             $VhdPath = "${OVM_OUT}\efi_disk.vhdx"
@@ -93,16 +97,13 @@ jobs:
             if (Test-Path -path $vhdPath) {
                 Remove-Item -Path $vhdPath -Force
             }
-            try {
-                $vhd_obj = New-VHD -Path $VhdPath -Dynamic -SizeBytes $VhdSizeBytes | Mount-VHD -Passthru
-                $dsk_cim = $vhd_obj | Initialize-Disk -PartitionStyle MBR -Passthru
-                $prt_cim = $dsk_cim | New-Partition -AssignDriveLetter -UseMaximumSize
-                $prt_cim | Format-Volume -FileSystem FAT -Force
-                $VhdDriveLetter = $prt_cim.DriveLetter
-                Copy-Item -Path ${EMU_OUT}\EFI -Destination "${VhdDriveLetter}:\" -Recurse -Force
-            } finally {
-                Remove-PartitionAccessPath -DiskNumber $prt_cim.DiskNumber -PartitionNumber $prt_cim.PartitionNumber -AccessPath "${VhdDriveLetter}:"
-                Dismount-VHD -Path $VhdPath
+            $vhd_obj = New-VHD -Path $VhdPath -Dynamic -SizeBytes $VhdSizeBytes | Mount-VHD -Passthru
+            $dsk_cim = $vhd_obj | Initialize-Disk -PartitionStyle MBR -Passthru
+            $prt_cim = $dsk_cim | New-Partition -AssignDriveLetter -UseMaximumSize
+            $prt_cim | Format-Volume -FileSystem FAT -Force
+            $VhdDriveLetter = $prt_cim.DriveLetter
+            Copy-Item -Path ${EMU_OUT}\EFI -Destination "${VhdDriveLetter}:\" -Recurse -Force
+            Dismount-VHD -Path $VhdPath
             }
             $base = New-Object System.Uri("${env:ARTIFACT_PATH}\")
             $fullpath = New-Object System.Uri("${OVM_OUT}")
@@ -116,6 +117,7 @@ jobs:
           } else {
               Write-Output "${OVM_OUT} does not exist"
           }
+
 
       # filename: .github/workflows/bld_cmd_ci_vs22.yml
       - name: Upload Artifact
