@@ -104,7 +104,6 @@ jobs:
             $VhdDriveLetter = $prt_cim.DriveLetter
             Copy-Item -Path ${EMU_OUT}\EFI -Destination "${VhdDriveLetter}:\" -Recurse -Force
             Dismount-VHD -Path $VhdPath
-            }
             $base = New-Object System.Uri("${env:ARTIFACT_PATH}\")
             $fullpath = New-Object System.Uri("${OVM_OUT}")
             $relpath = $base.MakeRelativeUri($fullpath).ToString() -replace '/', '\'
