@@ -76,6 +76,8 @@ jobs:
       #     %PYTHON_COMMAND% -m pip install PyYAML
 
       - name: show run id
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |-
           if not exist %ARTIFACT_PATH% mkdir %ARTIFACT_PATH%
           pushd %ARTIFACT_PATH%
