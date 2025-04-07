@@ -16,7 +16,7 @@ on:
       vs_year:
         description: "Visual Studio Year ( 22 | 19 )"
         required: false
-        default: "22"
+        default: "19"
       target:
         description: "Build target (DEBUG | RELEASE)"
         required: false
@@ -83,6 +83,7 @@ jobs:
         shell: pwsh
         run: |
           $OVM_OUT = "${env:ARTIFACT_PATH}\Ovmf${env:ARCH}\${env:TRGT}_${env:CHAIN}"
+          Install-WindowsFeature -Name RSAT-Hyper-V-Tools
           Get-Command *vhd*
           # if (Test-Path -path $OVM_OUT) {
           if (0) {
