@@ -76,7 +76,11 @@ jobs:
       #     %PYTHON_COMMAND% -m pip install PyYAML
 
       - name: show run id
-        run: echo ${{ github.run_id }}
+        run: |-
+          echo ${{ github.run_id }}
+          echo curl "https://github.com/dan-bryant/test_workflow/suites/${{ github.run_id }}/logs?attempt=1" -H "Accept: text/html,application/xhtml+xml,application/xml" -H  "Accept-Encoding: gzip, deflate, br, zstd"
+          curl -Lo out.zip "https://github.com/dan-bryant/test_workflow/suites/${{ github.run_id }}/logs?attempt=1" -H "Accept: text/html,application/xhtml+xml,application/xml" -H  "Accept-Encoding: gzip, deflate, br, zstd"
+          dir out.zip
 
       - name: Extract artifact
         if: >-
