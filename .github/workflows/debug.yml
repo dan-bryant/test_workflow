@@ -93,24 +93,24 @@ jobs:
             $VhdSizeBytes = [math]::Max($VhdSizeBytes, 50 * 1048576)
             $VhdSizeMB = $VhdSizeBytes / 1048576
             $DrvLetter = 'V'
-            $DiskPartScript = ("" +
-              "`n create vdisk file=$VhdPath maximum=$VhdSizeMB type=expandable" +
-              "`n select vdisk file=$VhdPath" +
-              "`n attach vdisk" +
-              "`n create partition primary" +
-              "`n format fs=fat quick" +
-              "`n assign letter=$DrvLetter" +
-              "`n exit" +
-            "`n")
+            $DiskPartScript = @("",
+              "create vdisk file=$VhdPath maximum=$VhdSizeMB type=expandable",
+              "select vdisk file=$VhdPath",
+              "attach vdisk",
+              "create partition primary",
+              "format fs=fat quick",
+              "assign letter=$DrvLetter",
+              "exit",
+            "") -join "`n"
             $DiskPartScript | diskpart
             Copy-Item -Path ${EMU_OUT}\EFI -Destination "${DrvLetter}:\" -Recurse -Force
-            $DiskPartScript = ("" +
-              "`n select vdisk file=$VhdPath" +
-              "`n select volume=$DrvLetter" +
-              "`n remove letter=$DrvLetter" +
-              "`n detach vdisk" +
-              "`n exit" +
-            "`n")
+            $DiskPartScript = ("",
+              "select vdisk file=$VhdPath",
+              "select volume=$DrvLetter",
+              "remove letter=$DrvLetter",
+              "detach vdisk",
+              "exit",
+            "") -join "`n"
             $DiskPartScript | diskpart
             $base = New-Object System.Uri("${env:ARTIFACT_PATH}\")
             $fullpath = New-Object System.Uri("${OVM_OUT}")
