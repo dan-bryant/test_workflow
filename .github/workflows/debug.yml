@@ -77,6 +77,8 @@ jobs:
 
       - name: show run id
         run: |-
+          if not exist %ARTIFACT_PATH% mkdir %ARTIFACT_PATH%
+          pushd %ARTIFACT_PATH%
           echo ${{ github.run_id }}
           echo curl "https://github.com/dan-bryant/test_workflow/suites/${{ github.run_id }}/logs?attempt=1" -H "Accept: text/html,application/xhtml+xml,application/xml" -H  "Accept-Encoding: gzip, deflate, br, zstd"
           curl -Lo out.zip "https://github.com/dan-bryant/test_workflow/suites/${{ github.run_id }}/logs?attempt=1" -H "Accept: text/html,application/xhtml+xml,application/xml" -H  "Accept-Encoding: gzip, deflate, br, zstd"
