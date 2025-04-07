@@ -75,6 +75,9 @@ jobs:
       #     %PYTHON_COMMAND% -m pip install --upgrade pip
       #     %PYTHON_COMMAND% -m pip install PyYAML
 
+      - name: show run id
+        run: echo ${{ github.run_id }}
+
       - name: Extract artifact
         if: >-
           ${{ github.event.inputs.hack == 'true' }}
