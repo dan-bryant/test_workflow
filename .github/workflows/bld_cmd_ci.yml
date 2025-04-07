@@ -1,5 +1,10 @@
 # filename: .github/workflows/bld_cmd_ci.yml
 name: Build with CMD and CI on VS
+# Explainer on the ${{ }} syntax:
+# https://docs.github.com/en/actions/writing-workflows
+#  /choosing-what-your-workflow-does
+#  /accessing-contextual-information-about-workflow-runs
+# The ">-" continuation here allows the name to span multiple lines
 run-name: >-
   ci-cmd-${{ github.event.inputs.build
     }}-vs${{ github.event.inputs.vs_year
@@ -8,29 +13,36 @@ run-name: >-
     }}-Py_${{ github.event.inputs.python_version
     }}-h_${{ github.event.inputs.hack }}
 
+# Workflow dispatch allows manual triggering of the workflow with inputs    
 on:
-  workflow_dispatch:  # Allows the workflow to be triggered manually
+  workflow_dispatch:
     inputs:
+      # Random conditional to hang various features off of
       hack:
         description: "Enable HACK mode"
         required: false
         default: "false"
+      # What to build, default to EmulatorPkg for speed
       build:
         description: "Pkg ( ie. EmulatorPkg, OvmfPkg, Edk2, All )"
         required: false
         default: "EmulatorPkg"
+      # Visual Studio year, default to 22 for latest (2022)
       vs_year:
         description: "Visual Studio Year ( 22 | 19 )"
         required: false
         default: "22"
+      # Build target, default to DEBUG for faster builds
       target:
         description: "Build target (DEBUG | RELEASE)"
         required: false
         default: "DEBUG"
+      # Architecture to build for, default to X64
       architecture:
         description: "Build architecture (X64 | IA32 )"
         required: false
         default: "X64"
+      # Python version to use, ensure the version is downloadable
       python_version:
         description: "Python version to use"
         required: false
@@ -38,11 +50,9 @@ on:
 
 jobs:
   build:
-    # Use the Windows Server 2022 runner
+    # Use the Windows Server 2022 or 2019 runner
     runs-on: windows-20${{ github.event.inputs.vs_year }}
-    # https://docs.github.com/en/actions/writing-workflows
-    #  /choosing-what-your-workflow-does
-    #  /accessing-contextual-information-about-workflow-runs
+    # Make a global environment block for the workflow
     env:
       GH_WORKSPACE: ${{ github.workspace }}
       GH_HEAD_SHA: ${{ github.sha }}
