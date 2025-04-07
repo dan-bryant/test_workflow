@@ -82,7 +82,7 @@ jobs:
           if not exist %ARTIFACT_PATH% mkdir %ARTIFACT_PATH%
           pushd %ARTIFACT_PATH%
           echo ${{ github.run_id }}
-          gh run view ${{ github.run_id }} --log > full-log.txt
+          gh run view ${{ github.run_id }} --log --repo ${{ github.repository }} > full-log.txt
 
       - name: Extract artifact
         if: >-
