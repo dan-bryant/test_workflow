@@ -120,7 +120,7 @@ jobs:
             format fs=fat quick
             assign letter=$DrvLetter
             exit
-            "@
+          "@
             $DiskPartScript | diskpart
             Copy-Item -Path ${EMU_OUT}\EFI -Destination "${DrvLetter}:\" -Recurse -Force
             $DiskPartScript = @"
@@ -129,7 +129,7 @@ jobs:
             remove letter=$DrvLetter
             detach vdisk
             exit
-            "@
+          "@
             $DiskPartScript | diskpart
             $base = New-Object System.Uri("${env:ARTIFACT_PATH}\")
             $fullpath = New-Object System.Uri("${OVM_OUT}")
