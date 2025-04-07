@@ -76,20 +76,17 @@ jobs:
       #     long-paths: true          # Enable long path support
 
       - name: Install Python 3.12.9, NASM, IASL
-        # if: ${{ github.event.inputs.hack != 'true' }}
         run: |
           curl -o ${{ github.workspace }}\%PYTHON_SETUP% https://www.python.org/ftp/python/%PYTHON_VERSION%/%PYTHON_SETUP%
           ${{ github.workspace }}\%PYTHON_SETUP% /quiet TargetDir=%PYTHON_PATH%
           choco install nasm iasl -y
 
       - name: Install Pip Requirements
-        # if: ${{ github.event.inputs.hack != 'true' }}
         run: |
           %PYTHON_COMMAND% -m pip install --upgrade pip
           %PYTHON_COMMAND% -m pip install -r "%EDK2_PATH%\pip-requirements.txt"
 
       - name: Build BaseTools
-        # if: ${{ github.event.inputs.hack != 'true' }}
         run: |
           pushd "%EDK2_PATH%"
           call edksetup.bat Reconfig %CHAIN%
@@ -98,7 +95,9 @@ jobs:
       - name: Build Edk2
         # Compiler #2065: EmbeddedPkg\...\VirtualRealTimeClockLib.c(89): 'BUILD_EPOCH': undeclared
         continue-on-error: true
-        if: ${{ github.event.inputs.build == 'All' || github.event.inputs.build == 'Edk2' }}
+        if: >
+          ${{ github.event.inputs.build == 'All' ||
+              github.event.inputs.build == 'Edk2' }}
         run: |
           pushd "%EDK2_PATH%"
           call edksetup.bat Reconfig %CHAIN%
@@ -107,7 +106,10 @@ jobs:
           %STUART%_ci_build -c .pytool\CISettings.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
 
       - name: Build EmulatorPkg
-        if: ${{ github.event.inputs.build == 'All' || github.event.inputs.build == 'EmulatorPkg' }}
+        if: >
+          ${{ github.event.inputs.build == 'All' ||
+              github.event.inputs.build == 'EmulatorPkg' ||
+              github.event.inputs.hack == 'true' }}
         run: |
           pushd "%EDK2_PATH%"
           call edksetup.bat Reconfig %CHAIN%
@@ -116,7 +118,11 @@ jobs:
           %STUART%_build -c EmulatorPkg\PlatformCI\PlatformBuild.py -a %ARCH% TOOL_CHAIN_TAG=%CHAIN% TARGET=%TRGT%
 
       - name: Build OvmfPkg
-        if: ${{ github.event.inputs.build == 'All' || github.event.inputs.build == 'OvmfPkg' }}
+        if: >
+          ${{ github.event.inputs.build == 'All' ||
+              github.event.inputs.build == 'OvmfPkg' ||
+              github.event.inputs.hack == 'true' }}
+
         run: |
           pushd "%EDK2_PATH%"
           call edksetup.bat Reconfig %CHAIN%
@@ -125,7 +131,10 @@ jobs:
           %STUART%_build -c OvmfPkg\PlatformCI\PlatformBuild.py -a %ARCH% TOOL_CHAIN_TAG=%CHAIN% TARGET=%TRGT%
 
       - name: Build Single Pkg ${{ github.event.inputs.build }}
-        if: ${{ github.event.inputs.build != 'All' && github.event.inputs.build != 'OvmfPkg' && github.event.inputs.build != 'EmulatorPkg' }}
+        if: >
+          ${{ github.event.inputs.build != 'All' &&
+              github.event.inputs.build != 'OvmfPkg' &&
+              github.event.inputs.build != 'EmulatorPkg' }}
         run: |
           pushd "%EDK2_PATH%"
           %STUART%_setup -c .pytool\CISettings.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
@@ -211,13 +220,54 @@ jobs:
             copy %VOLUME%\EFI\Tools\Shell.efi %VOLUME%\EFI\Boot\bootx64.efi
           )
 
-      - name: Install VHDX Tools (pwsh)
+      - name: Make VHDX File (pwsh:2019)
         shell: pwsh
         if: ${{ github.event.inputs.vs_year == '19' }}
-        run: Install-WindowsFeature -Name RSAT-Hyper-V-Tools
+        run: |
+          $OVM_OUT = "${env:ARTIFACT_PATH}\Ovmf${env:ARCH}\${env:TRGT}_${env:CHAIN}"
+          if (Test-Path -path $OVM_OUT) {
+            $EMU_OUT = "${env:ARTIFACT_PATH}\Emulator${env:ARCH}\${env:TRGT}_${env:CHAIN}\${env:ARCH}\Host"
+            $VhdPath = "${OVM_OUT}\efi_disk.vhdx"
+            $DirectorySizeBytes = (Get-ChildItem -Path "${EMU_OUT}\EFI" -Recurse | Measure-Object -Property Length -Sum).Sum
+            $VhdSizeBytes = [math]::Ceiling($DirectorySizeBytes * 2 / 1048576 ) * 1048576
+            $VhdSizeBytes = [math]::Max($VhdSizeBytes, 50 * 1048576)
+            $VhdSizeMB = $VhdSizeBytes / 1048576
+            $DrvLetter = 'V'
+            $DiskPartScript = @("",
+              "create vdisk file=$VhdPath maximum=$VhdSizeMB type=expandable",
+              "select vdisk file=$VhdPath",
+              "attach vdisk",
+              "create partition primary",
+              "format fs=fat quick",
+              "assign letter=$DrvLetter",
+              "exit",
+            "") -join "`n"
+            $DiskPartScript | diskpart
+            Copy-Item -Path ${EMU_OUT}\EFI -Destination "${DrvLetter}:\" -Recurse -Force
+            $DiskPartScript = ("",
+              "select vdisk file=$VhdPath",
+              "select volume=$DrvLetter",
+              "remove letter=$DrvLetter",
+              "detach vdisk",
+              "exit",
+            "") -join "`n"
+            $DiskPartScript | diskpart
+            $base = New-Object System.Uri("${env:ARTIFACT_PATH}\")
+            $fullpath = New-Object System.Uri("${OVM_OUT}")
+            $relpath = $base.MakeRelativeUri($fullpath).ToString() -replace '/', '\'
+            $qemu_cmd = ("pushd ${relpath} && wsl qemu-system-x86_64 -m 4096" +
+              " -drive if=pflash,format=raw,readonly=on,file=FV/OVMF_CODE.fd" +
+              " -drive if=pflash,format=raw,file=FV/OVMF_VARS.fd" +
+              " -drive file=efi_disk.vhdx,format=vhdx")
+            Out-File -FilePath "${env:ARTIFACT_PATH}\wsl_emu.bat" -InputObject $qemu_cmd -Encoding ascii
+            Write-Output "VHD created at $VhdPath"
+          } else {
+              Write-Output "${OVM_OUT} does not exist"
+          }
 
-      - name: Make VHDX File (pwsh)
+      - name: Make VHDX File (pwsh:2022)
         shell: pwsh
+        if: ${{ github.event.inputs.vs_year == '22' }}
         run: |
           $OVM_OUT = "${env:ARTIFACT_PATH}\Ovmf${env:ARCH}\${env:TRGT}_${env:CHAIN}"
           if (Test-Path -path $OVM_OUT) {
