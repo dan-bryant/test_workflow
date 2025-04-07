@@ -211,12 +211,12 @@ jobs:
             copy %VOLUME%\EFI\Tools\Shell.efi %VOLUME%\EFI\Boot\bootx64.efi
           )
 
-      - name: Install VHDX Tools
+      - name: Install VHDX Tools (pwsh)
         shell: pwsh
         if: ${{ github.event.inputs.vs_year == '19' }}
         run: Install-WindowsFeature -Name RSAT-Hyper-V-Tools
 
-      - name: Make VHDX
+      - name: Make VHDX File (pwsh)
         shell: pwsh
         run: |
           $OVM_OUT = "${env:ARTIFACT_PATH}\Ovmf${env:ARCH}\${env:TRGT}_${env:CHAIN}"
