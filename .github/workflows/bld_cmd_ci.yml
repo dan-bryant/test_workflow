@@ -91,7 +91,7 @@ jobs:
       #     submodules: recursive     # Initialize and update submodules
       #     long-paths: true          # Enable long path support
 
-      - name: Install Python 3.12.9, NASM, IASL
+      - name: Install Py${{ github.event.inputs.python_version }} and NASM and IASL
         run: |
           curl -o ${{ github.workspace }}\%PYTHON_SETUP% https://www.python.org/ftp/python/%PYTHON_VERSION%/%PYTHON_SETUP%
           ${{ github.workspace }}\%PYTHON_SETUP% /quiet TargetDir=%PYTHON_PATH%
@@ -236,7 +236,7 @@ jobs:
             copy %VOLUME%\EFI\Tools\Shell.efi %VOLUME%\EFI\Boot\bootx64.efi
           )
 
-      - name: Make VHDX File (pwsh:2019)
+      - name: Make VHDX File in pwsh for win2019
         shell: pwsh
         if: ${{ github.event.inputs.vs_year == '19' }}
         run: |
@@ -281,7 +281,7 @@ jobs:
               Write-Output "${OVM_OUT} does not exist"
           }
 
-      - name: Make VHDX File (pwsh:2022)
+      - name: Make VHDX File in pwsh for win2022
         shell: pwsh
         if: ${{ github.event.inputs.vs_year == '22' }}
         run: |
