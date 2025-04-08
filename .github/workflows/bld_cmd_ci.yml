@@ -150,7 +150,8 @@ jobs:
         if: >-
           ${{ github.event.inputs.build != 'All' &&
               github.event.inputs.build != 'OvmfPkg' &&
-              github.event.inputs.build != 'EmulatorPkg' }}
+              github.event.inputs.build != 'EmulatorPkg' &&
+              github.event.inputs.build != 'Edk2' }}
         run: |
           pushd "%EDK2_PATH%"
           %STUART%_setup -c .pytool\CISettings.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
