@@ -13,7 +13,7 @@ on:
       hack:
         description: "Enable HACK mode"
         required: false
-        default: "false"
+        default: "true"
       build:
         description: "Pkg ( ie. EmulatorPkg, OvmfPkg, Edk2, All )"
         required: false
