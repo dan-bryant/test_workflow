@@ -96,7 +96,7 @@ jobs:
           echo %cd%
           dir %cd%
 
-      - name: Make VHDX File (pwsh:2019)
+      - name: Make VHDX File pwsh 2019
         shell: pwsh
         if: >-
           ${{ github.event.inputs.hack == 'true' &&
@@ -112,39 +112,47 @@ jobs:
             $VhdSizeBytes = [math]::Max($VhdSizeBytes, 50 * 1048576)
             $VhdSizeMB = $VhdSizeBytes / 1048576
             $DrvLetter = 'V'
+
+            # Create VHDX file and mount it
             $DiskPartScript  = @"
-            create vdisk file="$VhdPath" maximum=$VhdSizeMB type=expandable
-            select vdisk file="$VhdPath"
-            attach vdisk
-            create partition primary
-            format fs=fat quick
-            assign letter=$DrvLetter
-            exit
-          "@
+              create vdisk file="$VhdPath" maximum=$VhdSizeMB type=expandable
+              select vdisk file="$VhdPath"
+              attach vdisk
+              create partition primary
+              format fs=fat quick
+              assign letter=$DrvLetter
+              exit
+          "@                            # Don't change the indention of this line
             $DiskPartScript | diskpart
+
+            # Fill the VHDX file with contents
             Copy-Item -Path ${EMU_OUT}\EFI -Destination "${DrvLetter}:\" -Recurse -Force
+
+            # Dismount the VHDX for packaging
             $DiskPartScript = @"
-            select vdisk file="$VhdPath"
-            select volume=$DrvLetter
-            remove letter=$DrvLetter
-            detach vdisk
-            exit
-          "@
+              select vdisk file="$VhdPath"
+              select volume=$DrvLetter
+              remove letter=$DrvLetter
+              detach vdisk
+              exit
+          "@                            # Don't change the indention of this line
             $DiskPartScript | diskpart
+
+            # Make the QEMU command file
             $base = New-Object System.Uri("${env:ARTIFACT_PATH}\")
             $fullpath = New-Object System.Uri("${OVM_OUT}")
             $relpath = $base.MakeRelativeUri($fullpath).ToString() -replace '/', '\'
-            $qemu_cmd = ("pushd ${relpath} && wsl qemu-system-x86_64 -m 4096" +
-              " -drive if=pflash,format=raw,readonly=on,file=FV/OVMF_CODE.fd" +
-              " -drive if=pflash,format=raw,file=FV/OVMF_VARS.fd" +
-              " -drive file=efi_disk.vhdx,format=vhdx")
+            $qemu_cmd = @("pushd ${relpath} && wsl qemu-system-x86_64 -m 4096",
+              " -drive if=pflash,format=raw,readonly=on,file=FV/OVMF_CODE.fd",
+              " -drive if=pflash,format=raw,file=FV/OVMF_VARS.fd",
+              " -drive file=efi_disk.vhdx,format=vhdx") -join " "
             Out-File -FilePath "${env:ARTIFACT_PATH}\wsl_emu.bat" -InputObject $qemu_cmd -Encoding ascii
             Write-Output "VHD created at $VhdPath"
           } else {
               Write-Output "${OVM_OUT} does not exist"
           }
 
-      - name: Make VHDX File (pwsh:2022)
+      - name: Make VHDX File pwsh 2022
         shell: pwsh
         if: >-
           ${{ github.event.inputs.hack == 'true' &&
@@ -158,13 +166,20 @@ jobs:
             $DirectorySizeBytes = (Get-ChildItem -Path "${EMU_OUT}\EFI" -Recurse | Measure-Object -Property Length -Sum).Sum
             $VhdSizeBytes = [math]::Ceiling($DirectorySizeBytes * 2 / 1048576 ) * 1048576
             $VhdSizeBytes = [math]::Max($VhdSizeBytes, 50 * 1048576)
+
+            # Create and mount VHDX file
             $vhd_obj = New-VHD -Path $VhdPath -Dynamic -SizeBytes $VhdSizeBytes | Mount-VHD -Passthru
             $dsk_cim = $vhd_obj | Initialize-Disk -PartitionStyle MBR -Passthru
             $prt_cim = $dsk_cim | New-Partition -AssignDriveLetter -UseMaximumSize
             $prt_cim | Format-Volume -FileSystem FAT -Force
             $VhdDriveLetter = $prt_cim.DriveLetter
+
+            # Fill the VHDX file with contents
             Copy-Item -Path ${EMU_OUT}\EFI -Destination "${VhdDriveLetter}:\" -Recurse -Force
+
+            # Dismount the VHDX for packaging
             Dismount-VHD -Path $VhdPath
+
             $base = New-Object System.Uri("${env:ARTIFACT_PATH}\")
             $fullpath = New-Object System.Uri("${OVM_OUT}")
             $relpath = $base.MakeRelativeUri($fullpath).ToString() -replace '/', '\'
