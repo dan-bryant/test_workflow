@@ -6,3 +6,5 @@ Todo Items
 - [ ] Add Python build info to YAML workflow
 - [ ] Port existing YAML to GCC5
 - [ ] Try ARM builds
+- [ ] Modify mk_bat.py to filter out PWSH blocks
+- [ ] Port all the YAML to PWSH
