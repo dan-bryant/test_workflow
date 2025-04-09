@@ -13,7 +13,7 @@ run-name: >-
     }}-Py_${{ github.event.inputs.python_version
     }}-h_${{ github.event.inputs.hack }}
 
-# Workflow dispatch allows manual triggering of the workflow with inputs    
+# Workflow dispatch allows manual triggering of the workflow with inputs
 on:
   workflow_dispatch:
     inputs:
@@ -82,31 +82,30 @@ jobs:
       - name: List Environment Variables
         run: set
 
+
+      # Cant seem to get the checkoud module to recurse like this
       - name: Clone Repo
         run: git clone --recurse-submodules --depth 1 --shallow-submodules %GH_REPO_URL% %REPO_PATH%
 
-      # - name: Checkout Repository recursively with long-files
-      #   uses: actions/checkout@v4
-      #   with:
-      #     submodules: recursive     # Initialize and update submodules
-      #     long-paths: true          # Enable long path support
 
       - name: Install Py${{ github.event.inputs.python_version }} and NASM and IASL
-        run: |
+        run: |-
           curl -o ${{ github.workspace }}\%PYTHON_SETUP% https://www.python.org/ftp/python/%PYTHON_VERSION%/%PYTHON_SETUP%
           ${{ github.workspace }}\%PYTHON_SETUP% /quiet TargetDir=%PYTHON_PATH%
           choco install nasm iasl -y
 
+
       - name: Install Pip Requirements
-        run: |
+        run: |-
           %PYTHON_COMMAND% -m pip install --upgrade pip
           %PYTHON_COMMAND% -m pip install -r "%EDK2_PATH%\pip-requirements.txt"
 
+
       - name: Build BaseTools
-        run: |
+        run: |-
           pushd "%EDK2_PATH%"
-          call edksetup.bat Reconfig %CHAIN%
           %PYTHON_COMMAND% BaseTools\Edk2ToolsBuild.py -t %CHAIN%
+
 
       - name: Build Edk2
         # Compiler #2065: EmbeddedPkg\...\VirtualRealTimeClockLib.c(89): 'BUILD_EPOCH': undeclared
@@ -114,37 +113,39 @@ jobs:
         if: >-
           ${{ github.event.inputs.build == 'All' ||
               github.event.inputs.build == 'Edk2' }}
-        run: |
+        run: |-
           pushd "%EDK2_PATH%"
           call edksetup.bat Reconfig %CHAIN%
           %STUART%_setup -c .pytool\CISettings.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
           %STUART%_update -c .pytool\CISettings.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
           %STUART%_ci_build -c .pytool\CISettings.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
 
+
       - name: Build EmulatorPkg
         if: >-
           ${{ github.event.inputs.build == 'All' ||
               github.event.inputs.build == 'EmulatorPkg' ||
               github.event.inputs.hack == 'true' }}
-        run: |
+        run: |-
           pushd "%EDK2_PATH%"
           call edksetup.bat Reconfig %CHAIN%
           %STUART%_setup -c EmulatorPkg\PlatformCI\PlatformBuild.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
           %STUART%_update -c EmulatorPkg\PlatformCI\PlatformBuild.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
           %STUART%_build -c EmulatorPkg\PlatformCI\PlatformBuild.py -a %ARCH% TOOL_CHAIN_TAG=%CHAIN% TARGET=%TRGT%
 
+
       - name: Build OvmfPkg
         if: >-
           ${{ github.event.inputs.build == 'All' ||
               github.event.inputs.build == 'OvmfPkg' ||
               github.event.inputs.hack == 'true' }}
-
-        run: |
+        run: |-
           pushd "%EDK2_PATH%"
           call edksetup.bat Reconfig %CHAIN%
           %STUART%_setup -c OvmfPkg\PlatformCI\PlatformBuild.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
           %STUART%_update -c OvmfPkg\PlatformCI\PlatformBuild.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
           %STUART%_build -c OvmfPkg\PlatformCI\PlatformBuild.py -a %ARCH% TOOL_CHAIN_TAG=%CHAIN% TARGET=%TRGT%
+
 
       - name: Build Single Pkg ${{ github.event.inputs.build }}
         if: >-
@@ -152,19 +153,17 @@ jobs:
               github.event.inputs.build != 'OvmfPkg' &&
               github.event.inputs.build != 'EmulatorPkg' &&
               github.event.inputs.build != 'Edk2' }}
-        run: |
+        run: |-
           pushd "%EDK2_PATH%"
           %STUART%_setup -c .pytool\CISettings.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
           %STUART%_update -c .pytool\CISettings.py -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
           %STUART%_ci_build -c .pytool\CISettings.py -p ${{ github.event.inputs.build }} -a %ARCH% -t %TRGT% TOOL_CHAIN_TAG=%CHAIN%
 
+
       - name: Gather VS Environment Data
-        run: |
-          set VOLUME=%ARTIFACT_PATH%\Emulator%ARCH%\%TRGT%_%CHAIN%\%ARCH%\Host
+        run: |-
           pushd "%EDK2_PATH%"
           call edksetup.bat Reconfig %CHAIN%
-          mkdir %VOLUME%\EFI\Boot
-          mkdir %VOLUME%\EFI\Tools
           pushd %ARTIFACT_PATH%
           set > vmInfoEnvVars.txt
           vswhere -format json > vmInfoVswhere.json
@@ -177,11 +176,14 @@ jobs:
             echo.| "%VS_SETUP_PATH%\vs_installer.exe" export --quiet --installPath "%%p" --config vmInfoVsConfig.json
           )
 
+
       - name: Package Build Outputs
         # Robocopy will likely throw an error on one of these, so ignore and continue
         # continue-on-error: true
-        run: |
+        run: |-
           set VOLUME=%ARTIFACT_PATH%\Emulator%ARCH%\%TRGT%_%CHAIN%\%ARCH%\Host
+          mkdir %VOLUME%\EFI\Boot
+          mkdir %VOLUME%\EFI\Tools
           pushd "%EDK2_PATH%\Build"
           echo "%CD%"
           xcopy %REPO_PATH%\.github\workflows\*.yml "%ARTIFACT_PATH%\"
@@ -209,25 +211,29 @@ jobs:
             )
           )
 
+
       - name: Build UEFI Volume
-        run: |
-          set VOLUME=%ARTIFACT_PATH%\Emulator%ARCH%\%TRGT%_%CHAIN%\%ARCH%\Host
+        run: |-
+          set OVM_OUT=%ARTIFACT_PATH%\Ovmf%ARCH%\%TRGT%_%CHAIN%
+          set BAT_FILE=build-%CHAIN%-%ARCH%-%TRGT%-Py%PYTHON_VERSION%.bat
+          set VOL_RELATIVE=Emulator%ARCH%\%TRGT%_%CHAIN%\%ARCH%\Host
+          set VOLUME=%ARTIFACT_PATH%\%VOL_RELATIVE%
           pushd %ARTIFACT_PATH%
-          echo %GH_HEAD_SHA% > vmInfo%CHAIN%-%ARCH%-%TRGT%-Py%PYTHON_VERSION%.txt
+          echo %GH_HEAD_SHA% > vmInfo-%CHAIN%-%ARCH%-%TRGT%-Py%PYTHON_VERSION%.txt
           dir /s /b /a:-d > repoFileListing.txt
           dir /s /b /a:d > repoDirListing.txt
           findstr /m /c:"%GH_WORKFLOW_NAME%" %REPO_PATH%\.github\workflows\*.yml > repoWorkflowFile.txt
           for /f "delims=;" %%p in (repoWorkflowFile.txt) do (
-            set GH_WORKFLOW_FILE=%%~pnxp
+            set GH_WORKFLOW_FILE=%%~nxp
           )
-          for %%p in (%VOLUME%) do (
-            echo efiVolume: %%~pnxp>> README.txt
-          )
-          set BAT_FILE=build%CHAIN%-%ARCH%-%TRGT%-Py%PYTHON_VERSION%.bat
-          %PYTHON_COMMAND% %REPO_PATH%\%BUILD_BAT% D:%GH_WORKFLOW_FILE% D:%BAT_FILE%
+          echo efiVolume: %VOL_RELATIVE% >> README.txt
           echo gitTag: %GH_HEAD_SHA%>> README.txt
           echo workflowFile: %GH_WORKFLOW_FILE%>> README.txt
           echo batFile: %BAT_FILE%>> README.txt
+          if exist %OVM_OUT% (
+            echo emuBatFile: wsl_emu.bat >> README.txt
+          )
+          %PYTHON_COMMAND% %REPO_PATH%\%BUILD_BAT% D:%GH_WORKFLOW_FILE% D:%BAT_FILE%
           for /d %%p in (*) do (
             if exist %ARTIFACT_PATH%\%%p\%TRGT%_%CHAIN%\%ARCH%\*.efi (
               xcopy %ARTIFACT_PATH%\%%p\%TRGT%_%CHAIN%\%ARCH%\*.efi %VOLUME%\EFI\Tools\  /D /Y
@@ -237,10 +243,11 @@ jobs:
             copy %VOLUME%\EFI\Tools\Shell.efi %VOLUME%\EFI\Boot\bootx64.efi
           )
 
+
       - name: Make VHDX File in pwsh for win2019
         shell: pwsh
         if: ${{ github.event.inputs.vs_year == '19' }}
-        run: |
+        run: |-
           $OVM_OUT = "${env:ARTIFACT_PATH}\Ovmf${env:ARCH}\${env:TRGT}_${env:CHAIN}"
           if (Test-Path -path $OVM_OUT) {
             $EMU_OUT = "${env:ARTIFACT_PATH}\Emulator${env:ARCH}\${env:TRGT}_${env:CHAIN}\${env:ARCH}\Host"
@@ -250,42 +257,51 @@ jobs:
             $VhdSizeBytes = [math]::Max($VhdSizeBytes, 50 * 1048576)
             $VhdSizeMB = $VhdSizeBytes / 1048576
             $DrvLetter = 'V'
-            $DiskPartScript = @("",
-              "create vdisk file=$VhdPath maximum=$VhdSizeMB type=expandable",
-              "select vdisk file=$VhdPath",
-              "attach vdisk",
-              "create partition primary",
-              "format fs=fat quick",
-              "assign letter=$DrvLetter",
-              "exit",
-            "") -join "`n"
+
+            # Create VHDX file and mount it
+            $DiskPartScript  = @"
+              create vdisk file="$VhdPath" maximum=$VhdSizeMB type=expandable
+              select vdisk file="$VhdPath"
+              attach vdisk
+              create partition primary
+              format fs=fat quick
+              assign letter=$DrvLetter
+              exit
+          "@                            # Don't change the indention of this line
             $DiskPartScript | diskpart
+
+            # Fill the VHDX file with contents
             Copy-Item -Path ${EMU_OUT}\EFI -Destination "${DrvLetter}:\" -Recurse -Force
-            $DiskPartScript = ("",
-              "select vdisk file=$VhdPath",
-              "select volume=$DrvLetter",
-              "remove letter=$DrvLetter",
-              "detach vdisk",
-              "exit",
-            "") -join "`n"
+
+            # Dismount the VHDX for packaging
+            $DiskPartScript = @"
+              select vdisk file="$VhdPath"
+              select volume=$DrvLetter
+              remove letter=$DrvLetter
+              detach vdisk
+              exit
+          "@                            # Don't change the indention of this line
             $DiskPartScript | diskpart
+
+            # Make the QEMU command file
             $base = New-Object System.Uri("${env:ARTIFACT_PATH}\")
             $fullpath = New-Object System.Uri("${OVM_OUT}")
             $relpath = $base.MakeRelativeUri($fullpath).ToString() -replace '/', '\'
-            $qemu_cmd = ("pushd ${relpath} && wsl qemu-system-x86_64 -m 4096" +
-              " -drive if=pflash,format=raw,readonly=on,file=FV/OVMF_CODE.fd" +
-              " -drive if=pflash,format=raw,file=FV/OVMF_VARS.fd" +
-              " -drive file=efi_disk.vhdx,format=vhdx")
+            $qemu_cmd = @("pushd ${relpath} && wsl qemu-system-x86_64 -m 4096",
+              " -drive if=pflash,format=raw,readonly=on,file=FV/OVMF_CODE.fd",
+              " -drive if=pflash,format=raw,file=FV/OVMF_VARS.fd",
+              " -drive file=efi_disk.vhdx,format=vhdx") -join " "
             Out-File -FilePath "${env:ARTIFACT_PATH}\wsl_emu.bat" -InputObject $qemu_cmd -Encoding ascii
             Write-Output "VHD created at $VhdPath"
           } else {
               Write-Output "${OVM_OUT} does not exist"
           }
 
+
       - name: Make VHDX File in pwsh for win2022
         shell: pwsh
         if: ${{ github.event.inputs.vs_year == '22' }}
-        run: |
+        run: |-
           $OVM_OUT = "${env:ARTIFACT_PATH}\Ovmf${env:ARCH}\${env:TRGT}_${env:CHAIN}"
           if (Test-Path -path $OVM_OUT) {
             $EMU_OUT = "${env:ARTIFACT_PATH}\Emulator${env:ARCH}\${env:TRGT}_${env:CHAIN}\${env:ARCH}\Host"
@@ -293,20 +309,20 @@ jobs:
             $DirectorySizeBytes = (Get-ChildItem -Path "${EMU_OUT}\EFI" -Recurse | Measure-Object -Property Length -Sum).Sum
             $VhdSizeBytes = [math]::Ceiling($DirectorySizeBytes * 2 / 1048576 ) * 1048576
             $VhdSizeBytes = [math]::Max($VhdSizeBytes, 50 * 1048576)
-            if (Test-Path -path $vhdPath) {
-                Remove-Item -Path $vhdPath -Force
-            }
-            try {
-                $vhd_obj = New-VHD -Path $VhdPath -Dynamic -SizeBytes $VhdSizeBytes | Mount-VHD -Passthru
-                $dsk_cim = $vhd_obj | Initialize-Disk -PartitionStyle MBR -Passthru
-                $prt_cim = $dsk_cim | New-Partition -AssignDriveLetter -UseMaximumSize
-                $prt_cim | Format-Volume -FileSystem FAT -Force
-                $VhdDriveLetter = $prt_cim.DriveLetter
-                Copy-Item -Path ${EMU_OUT}\EFI -Destination "${VhdDriveLetter}:\" -Recurse -Force
-            } finally {
-                Remove-PartitionAccessPath -DiskNumber $prt_cim.DiskNumber -PartitionNumber $prt_cim.PartitionNumber -AccessPath "${VhdDriveLetter}:"
-                Dismount-VHD -Path $VhdPath
-            }
+
+            # Create and mount VHDX file
+            $vhd_obj = New-VHD -Path $VhdPath -Dynamic -SizeBytes $VhdSizeBytes | Mount-VHD -Passthru
+            $dsk_cim = $vhd_obj | Initialize-Disk -PartitionStyle MBR -Passthru
+            $prt_cim = $dsk_cim | New-Partition -AssignDriveLetter -UseMaximumSize
+            $prt_cim | Format-Volume -FileSystem FAT -Force
+            $VhdDriveLetter = $prt_cim.DriveLetter
+
+            # Fill the VHDX file with contents
+            Copy-Item -Path ${EMU_OUT}\EFI -Destination "${VhdDriveLetter}:\" -Recurse -Force
+
+            # Dismount the VHDX for packaging
+            Dismount-VHD -Path $VhdPath
+
             $base = New-Object System.Uri("${env:ARTIFACT_PATH}\")
             $fullpath = New-Object System.Uri("${OVM_OUT}")
             $relpath = $base.MakeRelativeUri($fullpath).ToString() -replace '/', '\'
