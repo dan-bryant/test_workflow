@@ -182,10 +182,9 @@ jobs:
         # continue-on-error: true
         run: |-
           set VOLUME=%ARTIFACT_PATH%\Emulator%ARCH%\%TRGT%_%CHAIN%\%ARCH%\Host
+          pushd "%EDK2_PATH%\Build"
           mkdir %VOLUME%\EFI\Boot
           mkdir %VOLUME%\EFI\Tools
-          pushd "%EDK2_PATH%\Build"
-          echo "%CD%"
           xcopy %REPO_PATH%\.github\workflows\*.yml "%ARTIFACT_PATH%\"
           for /d %%p in (. *) do (
             if exist %EDK2_PATH%\Build\%%p\vmInfo* (
